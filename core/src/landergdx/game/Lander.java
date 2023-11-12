@@ -40,12 +40,12 @@ public class Lander {
     {
         width = Gdx.graphics.getWidth();
         height = Gdx.graphics.getHeight();
-        if(xpos>width)
-            xpos=width-xpos;
+        if(xpos>(width-32))
+            xpos=width-32;
         if(xpos<0)
             xpos=0;
-        if(ypos>height)
-            ypos=height;
+        if(ypos>(height-32))
+            ypos=height-32;
         if(ypos<0)
             ypos=0;
     }
