@@ -1,6 +1,8 @@
 package landergdx.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Lander {
     public int xpos;
@@ -48,6 +50,14 @@ public class Lander {
             ypos=height-32;
         if(ypos<0)
             ypos=0;
+    }
+    public Animation<TextureRegion> thrusters(Animation<TextureRegion> idle, Animation<TextureRegion> thrust)
+    {
+        if(Gdx.input.isKeyPressed(Keys.W))
+        {
+            return thrust;
+        }
+        return idle;
     }
 
 }
