@@ -3,53 +3,73 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 
 public class Lander {
-    public int xpos;
-    public int ypos;
-    //going to ignore angle for now
+    public float accel;
+    public Vector2 pos;
+    public Vector2 vel;
+    public Vector2 gravvel;
     //public double angle;
-
+    public double mass;
     // need to fix this to account for anyone changing window size
     int width;
     int height;
     public Lander()
     {
-        xpos = 0;
-        ypos =0;
         //angle = 0.0;
+        accel = 1f;
+        pos = new Vector2(0f,0f);
+        pos.x = 0;
+        pos.y = 0;
+        vel = new Vector2(0f,0f);
+        mass = 1;
+        gravvel = new Vector2(0,0);
     }
     public void fly()
     {
+        accel =1f;
         if(Gdx.input.isKeyPressed(Keys.A))
         {
-            xpos-= 200*Gdx.graphics.getDeltaTime();
+            vel.x-= 1*Gdx.graphics.getDeltaTime();
         }
         if(Gdx.input.isKeyPressed(Keys.D))
         {
-            xpos+= 200*Gdx.graphics.getDeltaTime();
+            vel.x+= 1*Gdx.graphics.getDeltaTime();
         }
         if(Gdx.input.isKeyPressed(Keys.W))
         {
-            ypos += 200*Gdx.graphics.getDeltaTime();
+            vel.y += 1*Gdx.graphics.getDeltaTime();
         }
         if(Gdx.input.isKeyPressed(Keys.S))
         {
-            ypos -= 200*Gdx.graphics.getDeltaTime();
+            vel.y -= 1*Gdx.graphics.getDeltaTime();
         }
+        /*
+        if(Gdx.input.isKeyPressed(Keys.Q))
+        {
+            angle -= 1*Gdx.graphics.getDeltaTime();
+        }
+        if(Gdx.input.isKeyPressed(Keys.E))
+        {
+            angle += 1*Gdx.graphics.getDeltaTime();
+        }
+        */
+
+        pos.add(vel);
     }
     public void boundscheck()
     {
         width = Gdx.graphics.getWidth();
         height = Gdx.graphics.getHeight();
-        if(xpos>(width-32))
-            xpos=width-32;
-        if(xpos<0)
-            xpos=0;
-        if(ypos>(height-32))
-            ypos=height-32;
-        if(ypos<0)
-            ypos=0;
+        if(pos.x>(width-32))
+            pos.x=width-32;
+        if(pos.x<0)
+            pos.x=0;
+        if(pos.y>(height-32))
+            pos.y=height-32;
+        if(pos.y<0)
+            pos.y=0;
     }
     public Animation<TextureRegion> thrusters(Animation<TextureRegion> idle, Animation<TextureRegion> thrust)
     {

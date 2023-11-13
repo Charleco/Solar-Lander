@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.ScreenUtils;
+import java.lang.Math;
 public class SolarLander extends ApplicationAdapter {
 	//sprites
 	SpriteBatch batch;
@@ -53,7 +54,7 @@ public class SolarLander extends ApplicationAdapter {
 		TextureRegion currentFrame = (land.thrusters(idle, thrusters)).getKeyFrame(stateTime, true);
 		land.fly();
 		land.boundscheck();
-		batch.draw(currentFrame, land.xpos, land.ypos);
+		batch.draw(currentFrame, land.pos.x, land.pos.y);
 		batch.end();
 	}
 	
