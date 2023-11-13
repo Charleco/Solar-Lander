@@ -79,5 +79,24 @@ public class Lander {
         }
         return idle;
     }
-
+    public void Gravfly(double grav,Planet plan)
+    {
+        if(pos.x>plan.x)
+        {
+            gravvel.x-=grav;
+        }
+        if(pos.x<plan.x)
+        {
+            gravvel.x+=grav;
+        }
+        if(pos.y>plan.y)
+        {
+            gravvel.y-=grav;
+        }
+        if(pos.y<plan.y)
+        {
+            gravvel.y+=grav;
+        }
+        pos.add(gravvel);
+    }
 }
