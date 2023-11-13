@@ -60,6 +60,15 @@ public class SolarLander extends ApplicationAdapter {
 		stateTime += Gdx.graphics.getDeltaTime();
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
+
+		//draw the moon
+		rend.begin(ShapeRenderer.ShapeType.Filled);
+		rend.setColor(0,0,1,1);
+		rend.circle(moon.x,moon.y,moon.radius);
+		rend.end();
+
+		hitboxRender.BoxRender(landHitbox,moonHitbox,camera);
+
 		batch.begin();
 		TextureRegion currentFrame = (land.thrusters(idle, thrusters)).getKeyFrame(stateTime, true);
 		land.fly();

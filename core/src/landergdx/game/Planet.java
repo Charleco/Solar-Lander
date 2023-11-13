@@ -5,12 +5,9 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Planet extends Circle {
 
-    private final double mass;
-
-
+    public final double mass;
     public Planet(double mass, int y, int x, float rad)
     {
-
         this.x = x;
         this.y = y;
         this.mass = mass;
