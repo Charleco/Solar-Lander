@@ -13,7 +13,7 @@ public class solarRender {
     {
         this.rend = rend;
     }
-    public void BoxRender(Rectangle landHitbox, Circle moonHitbox, OrthographicCamera camera)
+    public void boxRender(Rectangle landHitbox, Circle moonHitbox, OrthographicCamera camera)
     {
         if(Gdx.input.isKeyPressed(SPACE))
         {
@@ -29,10 +29,10 @@ public class solarRender {
         }
     }
 
-    public void OrbitRender(Lander land, OrthographicCamera camera, Planet plan)
+    public void orbitRender(Lander land, OrthographicCamera camera, Planet plan)
     {
 
-        double velocity = (land.vel.y+land.gravvel.y+land.vel.x+land.gravvel.x);
+        double velocity = (land.vel.y+land.gravVel.y+land.vel.x+land.gravVel.x);
         rend.setProjectionMatrix(camera.combined);
         rend.begin(ShapeRenderer.ShapeType.Line);
         rend.setColor(0,0,1,1);

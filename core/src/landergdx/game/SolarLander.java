@@ -9,16 +9,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.ScreenUtils;
-import java.lang.Math;
 public class SolarLander extends ApplicationAdapter {
 	//sprites
 	SpriteBatch batch;
-	Texture landerimg;
-	Texture thrustersheet;
-	Texture moonimg;
+	Texture landerImg;
+	Texture thrusterSheet;
 	//animations
 	Animation<TextureRegion> thrusters;
 	Animation<TextureRegion> idle;
@@ -37,13 +34,13 @@ public class SolarLander extends ApplicationAdapter {
 
 		//textures
 		batch = new SpriteBatch();
-		landerimg = new Texture("Lunar Lander.png");
-		thrustersheet = new Texture("Lunar Lander thruster.png");
+		landerImg = new Texture("Lunar Lander.png");
+		thrusterSheet = new Texture("Lunar Lander thruster.png");
 		//animations
 		sprAnim thruster = new sprAnim();
 		sprAnim idling = new sprAnim();
-		thrusters = thruster.getAnim(1,3,thrustersheet,.1f);
-		idle = idling.getAnim(1,1,landerimg,.1f);
+		thrusters = thruster.getAnim(1,3,thrusterSheet,.1f);
+		idle = idling.getAnim(1,1,landerImg,.1f);
 		//other
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false);
@@ -67,14 +64,14 @@ public class SolarLander extends ApplicationAdapter {
 		rend.circle(moon.x,moon.y,moon.radius);
 		rend.end();
 		//render object hitboxes
-		solarRender.BoxRender(landHitbox,moonHitbox,camera);
+		solarRender.boxRender(landHitbox,moonHitbox,camera);
 		//render orbit path
-		solarRender.OrbitRender(land,camera,moon);
+		solarRender.orbitRender(land,camera,moon);
 
 		batch.begin();
 		TextureRegion currentFrame = (land.thrusters(idle, thrusters)).getKeyFrame(stateTime, true);
 		land.fly();
-		land.Gravfly(moon.Gravity(moon,land), moon);
+		land.gravFly(moon.Gravity(moon,land), moon);
 		land.boundscheck();
 		landHitbox.x = land.pos.x;
 		landHitbox.y = land.pos.y;
@@ -86,8 +83,8 @@ public class SolarLander extends ApplicationAdapter {
 	@Override
 	public void dispose () {
 		batch.dispose();
-		landerimg.dispose();
-		thrustersheet.dispose();
-		moonimg.dispose();
+		landerImg.dispose();
+		thrusterSheet.dispose();
+		rend.dispose();
 	}
 }
