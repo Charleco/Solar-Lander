@@ -3,8 +3,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-
 public class Lander {
     public float accel;
     public Vector2 pos;
@@ -12,9 +14,9 @@ public class Lander {
     public Vector2 gravvel;
     //public double angle;
     public double mass;
-    // need to fix this to account for anyone changing window size
-    int width;
-    int height;
+    int x;
+    int y;
+
     public Lander()
     {
         //angle = 0.0;
@@ -25,6 +27,7 @@ public class Lander {
         vel = new Vector2(0f,0f);
         mass = 1;
         gravvel = new Vector2(0,0);
+
     }
     public void fly()
     {
@@ -57,17 +60,19 @@ public class Lander {
         */
 
         pos.add(vel);
+
     }
     public void boundscheck()
     {
-        width = Gdx.graphics.getWidth();
-        height = Gdx.graphics.getHeight();
-        if(pos.x>(width-32))
-            pos.x=width-32;
+
+        x = Gdx.graphics.getWidth();
+        y = Gdx.graphics.getHeight();
+        if(pos.x>(x-32))
+            pos.x=x-32;
         if(pos.x<0)
             pos.x=0;
-        if(pos.y>(height-32))
-            pos.y=height-32;
+        if(pos.y>(y-32))
+            pos.y=y-32;
         if(pos.y<0)
             pos.y=0;
     }
@@ -98,5 +103,13 @@ public class Lander {
             gravvel.y+=grav;
         }
         pos.add(gravvel);
+    }
+    public boolean crashTest(Circle plan, Rectangle land)
+    {
+        if(Intersector.overlaps(plan, land)) {
+            System.out.println("nuts");
+            return true;
+        }
+        return false;
     }
 }
