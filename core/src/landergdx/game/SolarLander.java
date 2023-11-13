@@ -31,10 +31,10 @@ public class SolarLander extends ApplicationAdapter {
 	Rectangle landHitbox;
 	Circle moonHitbox;
 	ShapeRenderer rend;
-	HitboxRender hitboxRender;
+	solarRender solarRender;
 	@Override
 	public void create () {
-		
+
 		//textures
 		batch = new SpriteBatch();
 		landerimg = new Texture("Lunar Lander.png");
@@ -52,7 +52,7 @@ public class SolarLander extends ApplicationAdapter {
 		landHitbox = new Rectangle(land.pos.x,land.pos.y,32,32);
 		moonHitbox = new Circle(moon.x,moon.y,moon.radius);
 		rend = new ShapeRenderer();
-		hitboxRender = new HitboxRender(rend);
+		solarRender = new solarRender(rend);
 	}
 	@Override
 	public void render () {
@@ -66,8 +66,10 @@ public class SolarLander extends ApplicationAdapter {
 		rend.setColor(0,0,1,1);
 		rend.circle(moon.x,moon.y,moon.radius);
 		rend.end();
-
-		hitboxRender.BoxRender(landHitbox,moonHitbox,camera);
+		//render object hitboxes
+		solarRender.BoxRender(landHitbox,moonHitbox,camera);
+		//render orbit path
+		solarRender.OrbitRender(land,camera,moon);
 
 		batch.begin();
 		TextureRegion currentFrame = (land.thrusters(idle, thrusters)).getKeyFrame(stateTime, true);
@@ -79,6 +81,7 @@ public class SolarLander extends ApplicationAdapter {
 		land.crashTest(moonHitbox,landHitbox);
 		batch.draw(currentFrame, land.pos.x, land.pos.y);
 		batch.end();
+
 	}
 	@Override
 	public void dispose () {
