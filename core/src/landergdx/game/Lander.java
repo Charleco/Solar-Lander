@@ -60,6 +60,7 @@ public class Lander {
         */
 
         pos.add(vel);
+        System.out.println("x:"+vel.x+" y: "+vel.y);
 
     }
     public void boundscheck()
@@ -68,13 +69,26 @@ public class Lander {
         x = Gdx.graphics.getWidth();
         y = Gdx.graphics.getHeight();
         if(pos.x>(x-32))
-            pos.x=x-32;
+        {
+            pos.x = x - 32;
+            vel.x = -vel.x;
+        }
         if(pos.x<0)
-            pos.x=0;
+        {
+            pos.x = 0;
+            vel.x = -vel.x;
+        }
         if(pos.y>(y-32))
-            pos.y=y-32;
+        {
+            pos.y = y - 32;
+            vel.y = -vel.y;
+        }
         if(pos.y<0)
-            pos.y=0;
+        {
+            pos.y = 0;
+            vel.y = -vel.y;
+        }
+        pos.add(vel);
     }
     public Animation<TextureRegion> thrusters(Animation<TextureRegion> idle, Animation<TextureRegion> thrust)
     {
