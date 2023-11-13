@@ -23,7 +23,7 @@ public class Planet extends Circle {
     }
     public double getDistance(Lander land)
     {
-        double distance = Math.sqrt(Math.pow(x - land.pos.x,2) + Math.pow(y - land.pos.y,2));
+        double distance = Math.sqrt(Math.pow(x - (land.pos.x+16),2) + Math.pow(y - (land.pos.y+16),2));
         return distance;
     }
 
