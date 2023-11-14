@@ -60,8 +60,6 @@ public class Lander {
         */
 
         pos.add(vel);
-        System.out.println("x:"+vel.x+" y: "+vel.y);
-
     }
     public void boundscheck()
     {
@@ -118,10 +116,13 @@ public class Lander {
         }
         pos.add(gravVel);
     }
-    public boolean crashTest(Circle plan, Rectangle land)
+    public boolean crashTest(Circle planBox, Rectangle landBox)
     {
-        if(Intersector.overlaps(plan, land)) {
-            System.out.println("nuts");
+
+        if(Intersector.overlaps(planBox, landBox)) {
+            vel.y= -(vel.y+gravVel.y);
+            vel.x= -(vel.x+gravVel.x);
+
             return true;
         }
         return false;
