@@ -11,7 +11,6 @@ public class Lander {
     public float accel;
     public Vector2 pos;
     public Vector2 vel;
-    public Vector2 gravVel;
     //public double angle;
     public double mass;
     int x;
@@ -26,8 +25,6 @@ public class Lander {
         pos.y = 0;
         vel = new Vector2(0f,0f);
         mass = 1;
-        gravVel = new Vector2(0f,0f);
-
     }
     public void fly()
     {
@@ -100,28 +97,29 @@ public class Lander {
     {
         if(pos.x>plan.x)
         {
-            gravVel.x-=grav;
+            vel.x-=grav;
         }
         if(pos.x<plan.x)
         {
-            gravVel.x+=grav;
+            vel.x+=grav;
         }
         if(pos.y>plan.y)
         {
-            gravVel.y-=grav;
+            vel.y-=grav;
         }
         if(pos.y<plan.y)
         {
-            gravVel.y+=grav;
+            vel.y+=grav;
         }
-        pos.add(gravVel);
+        pos.add(vel);
     }
     public boolean crashTest(Circle planBox, Rectangle landBox)
     {
 
-        if(Intersector.overlaps(planBox, landBox)) {
-            vel.y= -(vel.y+gravVel.y);
-            vel.x= -(vel.x+gravVel.x);
+        if(Intersector.overlaps(planBox, landBox))
+        {
+            vel.y= -(vel.y);
+            vel.x= -(vel.x);
 
             return true;
         }
