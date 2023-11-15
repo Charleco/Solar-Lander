@@ -15,6 +15,7 @@ public class Lander {
     public double mass;
     int x;
     int y;
+    public Rectangle landHitBox;
 
     public Lander()
     {
@@ -25,6 +26,8 @@ public class Lander {
         pos.y = 0;
         vel = new Vector2(0f,0f);
         mass = 1;
+        landHitBox = new Rectangle(pos.x,pos.y,32,32);
+
     }
     public void fly()
     {
@@ -124,5 +127,17 @@ public class Lander {
             return true;
         }
         return false;
+    }
+    public void holdOrbit(Planet plan)
+    {
+        if(Gdx.input.isKeyPressed(Keys.CONTROL_LEFT))
+        {
+
+        }
+    }
+    public void hitboxUpdate(Rectangle hitbox)
+    {
+        hitbox.x = pos.x;
+        hitbox.y = pos.y;
     }
 }

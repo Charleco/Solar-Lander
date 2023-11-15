@@ -14,14 +14,16 @@ public class solarRender {
     {
         this.rend = rend;
     }
-    public void landerBoxRender(Rectangle landHitbox)
+    public boolean landerBoxRender(Rectangle landHitbox)
     {
         if(Gdx.input.isKeyPressed(SPACE))
         {
             //lander hitbox
             rend.setColor(Color.SCARLET); // Red color for land hitbox
             rend.rect(landHitbox.x, landHitbox.y, landHitbox.width, landHitbox.height);
+            return true;
         }
+        return false;
     }
     public void planetBoxRender(Circle planHitbox, Planet plan)
     {
