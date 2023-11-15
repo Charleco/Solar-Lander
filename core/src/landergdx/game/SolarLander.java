@@ -2,6 +2,7 @@ package landergdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -24,9 +25,8 @@ public class SolarLander extends ApplicationAdapter {
 	//other
 	private OrthographicCamera camera;
 	Lander land = new Lander();
-	Planet moon;
-	Rectangle landHitbox;
-	Circle moonHitbox;
+	Planet[] solarSystem;
+	Rectangle landHitBox;
 	ShapeRenderer rend;
 	solarRender solarRender;
 	@Override
@@ -45,11 +45,17 @@ public class SolarLander extends ApplicationAdapter {
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false);
 		stateTime = 0f;
-		moon = new Planet(7.3477e11,200,200, 60);
-		landHitbox = new Rectangle(land.pos.x,land.pos.y,32,32);
-		moonHitbox = new Circle(moon.x,moon.y,moon.radius);
 		rend = new ShapeRenderer();
 		solarRender = new solarRender(rend);
+		landHitBox = new Rectangle(land.pos.x,land.pos.y,32,32);
+		//planet creation
+		solarSystem = new Planet[1];
+		for(int i = 0 ; i < solarSystem.length;i++)
+		{
+			solarSystem[i] = new Planet(8.3477e11,200,200,60);
+			new Circle(solarSystem[i].x,solarSystem[i].y,solarSystem[i].radius);
+			solarSystem[i].setHitbox();
+		}
 	}
 	@Override
 	public void render () {
@@ -57,25 +63,44 @@ public class SolarLander extends ApplicationAdapter {
 		stateTime += Gdx.graphics.getDeltaTime();
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
-
-		//draw the moon
+		stage.act(Gdx.graphics.getDeltaTime());
+		land.labelUpdate(label);
+		stage.draw();
+		//draw the planets
+		rend.setProjectionMatrix(camera.combined);
+		rend.setAutoShapeType(false);
 		rend.begin(ShapeRenderer.ShapeType.Filled);
-		rend.setColor(0,0,1,1);
-		rend.circle(moon.x,moon.y,moon.radius);
+		for(Planet plan : solarSystem)
+		{
+			rend.setColor(Color.BLUE);
+			rend.circle(plan.x, plan.y, plan.radius);
+		}
 		rend.end();
-		//render object hitboxes
-		solarRender.boxRender(landHitbox,moonHitbox,camera);
-		//render orbit path
-		solarRender.orbitRender(land,camera,moon);
+
+		rend.begin(ShapeRenderer.ShapeType.Line);
+		for(Planet plan: solarSystem)
+		{
+			solarRender.planetBoxRender(plan.hitBox,plan);	//planet hitboxes
+			solarRender.orbitRender(land,plan); //orbit path
+		}
+		solarRender.landerBoxRender(landHitBox); //lander hitbox
+		rend.end();
+
 
 		batch.begin();
 		TextureRegion currentFrame = (land.thrusters(idle, thrusters)).getKeyFrame(stateTime, true);
 		land.fly();
-		land.gravFly(moon.Gravity(moon,land), moon);
+		for(Planet plan:solarSystem)
+		{
+			land.gravFly(plan.Gravity(land), plan);
+
+		}
 		land.boundscheck();
-		landHitbox.x = land.pos.x;
-		landHitbox.y = land.pos.y;
-		land.crashTest(moonHitbox,landHitbox);
+		land.hitboxUpdate(landHitBox);
+		for(Planet plan:solarSystem)
+		{
+			land.crashTest(plan.hitBox,landHitBox);
+		}
 		batch.draw(currentFrame, land.pos.x, land.pos.y);
 		batch.end();
 
@@ -86,5 +111,6 @@ public class SolarLander extends ApplicationAdapter {
 		landerImg.dispose();
 		thrusterSheet.dispose();
 		rend.dispose();
+		stage.dispose();
 	}
 }
