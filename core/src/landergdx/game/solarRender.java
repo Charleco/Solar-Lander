@@ -14,34 +14,21 @@ public class solarRender {
     {
         this.rend = rend;
     }
-    public boolean landerBoxRender(Rectangle landHitbox)
-    {
-        if(Gdx.input.isKeyPressed(SPACE))
+    public void hitBoxRender(Circle hitBox) {
+        if (Gdx.input.isKeyPressed(SPACE))
         {
-            //lander hitbox
-            rend.setColor(Color.SCARLET); // Red color for land hitbox
-            rend.rect(landHitbox.x, landHitbox.y, landHitbox.width, landHitbox.height);
-            return true;
-        }
-        return false;
-    }
-    public void planetBoxRender(Circle planHitbox, Planet plan)
-    {
-        if(Gdx.input.isKeyPressed(SPACE))
-        {
-            rend.setColor(plan.color);
-            rend.circle(planHitbox.x, planHitbox.y, planHitbox.radius);
+            rend.setColor(Color.RED);
+            rend.circle(hitBox.x,hitBox.y,hitBox.radius);
         }
     }
-    public void orbitRender(Lander land, Planet plan)
+    public void orbitRender(Lander land, solarObject ob)
     {
-
         double velocity = (land.vel.y+land.vel.x);
         rend.setColor(0,0,1,1);
         if(velocity!=0)
         {
-            double r = (plan.G * plan.mass) / Math.pow(velocity, 2);
-            rend.circle(plan.x,plan.y,(float)plan.getDistance(land));
+            double r = (ob.G * ob.mass) / Math.pow(velocity, 2);
+            rend.circle(ob.pos.x,ob.pos.y, (float) (ob.getDistance(land,ob)));
         }
     }
 }

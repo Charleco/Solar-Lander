@@ -3,30 +3,27 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-public class Lander {
-    public float accel;
-    public Vector2 pos;
-    public Vector2 vel;
-    //public double angle;
-    public double mass;
-    int x;
-    int y;
-    public Rectangle landHitBox;
+import com.badlogic.gdx.math.*;
 
-    public Lander()
+public class Lander  extends solarObject{
+    public float accel;
+    //public double angle;
+    //public double mass;
+    int Sx;
+    int Sy;
+
+
+    public Lander(double mass,int x, int y)
     {
+        super(mass,x,y);
         //angle = 0.0;
         accel = 1f;
-        pos = new Vector2(0f,0f);
-        pos.x = 0;
-        pos.y = 0;
-        vel = new Vector2(0f,0f);
+        pos.x = x;
+        pos.y = y;
+        vel.x = 0;
+        vel.y = 0;
         mass = 1;
-        landHitBox = new Rectangle(pos.x,pos.y,32,32);
+        hitBox = new Circle(pos.x+16,pos.y+16,16);
 
     }
     public void fly()
@@ -61,33 +58,6 @@ public class Lander {
 
         pos.add(vel);
     }
-    public void boundscheck()
-    {
-
-        x = Gdx.graphics.getWidth();
-        y = Gdx.graphics.getHeight();
-        if(pos.x>(x-32))
-        {
-            pos.x = x - 32;
-            vel.x = -vel.x;
-        }
-        if(pos.x<0)
-        {
-            pos.x = 0;
-            vel.x = -vel.x;
-        }
-        if(pos.y>(y-32))
-        {
-            pos.y = y - 32;
-            vel.y = -vel.y;
-        }
-        if(pos.y<0)
-        {
-            pos.y = 0;
-            vel.y = -vel.y;
-        }
-        pos.add(vel);
-    }
     public Animation<TextureRegion> thrusters(Animation<TextureRegion> idle, Animation<TextureRegion> thrust)
     {
         if(Gdx.input.isKeyPressed(Keys.W))
@@ -96,38 +66,8 @@ public class Lander {
         }
         return idle;
     }
-    public void gravFly(double grav, Planet plan)
-    {
-        if(pos.x>plan.x)
-        {
-            vel.x-=grav;
-        }
-        if(pos.x<plan.x)
-        {
-            vel.x+=grav;
-        }
-        if(pos.y>plan.y)
-        {
-            vel.y-=grav;
-        }
-        if(pos.y<plan.y)
-        {
-            vel.y+=grav;
-        }
-        pos.add(vel);
-    }
-    public boolean crashTest(Circle planBox, Rectangle landBox)
-    {
 
-        if(Intersector.overlaps(planBox, landBox))
-        {
-            vel.y= -(vel.y);
-            vel.x= -(vel.x);
 
-            return true;
-        }
-        return false;
-    }
     public void holdOrbit(Planet plan)
     {
         if(Gdx.input.isKeyPressed(Keys.CONTROL_LEFT))
@@ -135,9 +75,9 @@ public class Lander {
 
         }
     }
-    public void hitboxUpdate(Rectangle hitbox)
+    public void hitboxUpdate()
     {
-        hitbox.x = pos.x;
-        hitbox.y = pos.y;
+        hitBox.x = pos.x+16;
+        hitBox.y = pos.y+16;
     }
 }

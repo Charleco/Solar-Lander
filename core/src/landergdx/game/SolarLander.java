@@ -3,6 +3,7 @@ package landergdx.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -10,11 +11,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Circle;
+import java.util.Random;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -40,9 +40,10 @@ public class SolarLander extends ApplicationAdapter {
 	private userInterface ui;
 	private ExtendViewport extendView;
 	private ScreenViewport screenView;
+	private OrthographicCamera orthoCam;
 	//objects
-	Lander land = new Lander();
-	Planet[] solarSystem;
+	Lander land = new Lander(1,400,400);
+	solarObject[] solarSystem;
 	ShapeRenderer rend;
 	solarRender solarRender;
 	@Override
@@ -63,18 +64,22 @@ public class SolarLander extends ApplicationAdapter {
 		solarRender = new solarRender(rend);
 		//planet creation
 		solarSystem = new Planet[1];
+		Random rand = new Random();
+
 		for(int i = 0 ; i < solarSystem.length;i++)
 		{
-			solarSystem[i] = new Planet(8.3477e11,200,200,60);
-			new Circle(solarSystem[i].x,solarSystem[i].y,solarSystem[i].radius);
-			solarSystem[i].setHitbox();
+			int coords = rand.nextInt(800);
+			solarSystem[i] = new Planet(8.3477e11,coords,coords,60);
+			System.out.println(coords);
 		}
-
-		//UI
-		extendView = new ExtendViewport(900,900); //Batch viewport
-		extendView.getCamera().position.set(800, 400, 0);
+		//Camera and Viewports
+		orthoCam = new OrthographicCamera();
+		extendView = new ExtendViewport(900,900, orthoCam); //Batch viewport
+		orthoCam.position.set(land.pos.x,land.pos.y,0);
+		orthoCam.update();
 		screenView = new ScreenViewport(); //UI viewport
 
+		//UI
 		stage = new Stage(screenView, batch);
 		Gdx.input.setInputProcessor(stage);
 
@@ -100,10 +105,6 @@ public class SolarLander extends ApplicationAdapter {
 		table.add(debugLabel).growX().space(10).padLeft(5);
 		debugLabel.setWrap(true);
 		velocityLabel.setWrap(true);
-
-		//table.setDebug(true);
-		//debugLabel.setDebug(true);
-		//velocityLabel.setDebug(true);
 		ui = new userInterface();
 
 	}
@@ -111,54 +112,53 @@ public class SolarLander extends ApplicationAdapter {
 	{
 		extendView.update(width, height,true);
 		screenView.update(width, height, true);
-
-		land.x = width;
-		land.y = height;
+		land.Sx = width;
+		land.Sy = height;
 	}
 	@Override
 	public void render () {
 		ScreenUtils.clear(0, 0, 0, 1);
 		stateTime += Gdx.graphics.getDeltaTime();
+		orthoCam.position.set(land.pos.x, land.pos.y, 0);
+		orthoCam.update();
 		extendView.apply();
 		//draw the planets
 		rend.setProjectionMatrix(extendView.getCamera().combined);
 		rend.setAutoShapeType(false);
 		rend.begin(ShapeRenderer.ShapeType.Filled);
-		for(Planet plan : solarSystem)
+		for(solarObject ob : solarSystem)
 		{
 			rend.setColor(Color.BLUE);
-			rend.circle(plan.x, plan.y, plan.radius);
+			rend.circle(ob.pos.x, ob.pos.y, ob.radius);
+			System.out.println("X: "+ob.pos.x+" Y: "+ob.pos.y);
 		}
 		rend.end();
 		rend.begin(ShapeRenderer.ShapeType.Line);
-		for(Planet plan: solarSystem)
+		for(solarObject ob: solarSystem)
 		{
-			solarRender.planetBoxRender(plan.hitBox,plan);	//planet hitboxes
-			solarRender.orbitRender(land,plan); //orbit path
+			solarRender.hitBoxRender(ob.hitBox);	//planet hitboxes
+			solarRender.orbitRender(land,ob); //orbit path
 		}
-		solarRender.landerBoxRender(land.landHitBox); //lander hitbox
-		rend.end();
-
-		//ui debug render
-		rend.setAutoShapeType(true);
-		rend.begin();
-		table.drawDebug(rend);
+		solarRender.hitBoxRender(land.hitBox);
 		rend.end();
 		//textures and actions
 		batch.setProjectionMatrix(extendView.getCamera().combined);
 		batch.begin();
 		TextureRegion currentFrame = (land.thrusters(idle, thrusters)).getKeyFrame(stateTime, true);
 		land.fly();
-		for(Planet plan:solarSystem)
+		for(int i =0;i<solarSystem.length;i++)
 		{
-			land.gravFly(plan.Gravity(land), plan);
-
+			solarSystem[i].gravVel((solarSystem[i].Gravity(land)),land);
 		}
-		land.boundscheck();
-		land.hitboxUpdate(land.landHitBox);
-		for(Planet plan:solarSystem)
+		for(solarObject ob: solarSystem)
 		{
-			land.crashTest(plan.hitBox,land.landHitBox);
+			ob.orbit();
+			ob.hitboxUpdate();
+		}
+		land.hitboxUpdate();
+		for(solarObject ob:solarSystem)
+		{
+			land.crashTest(ob.hitBox,land.hitBox);
 		}
 		batch.draw(currentFrame, land.pos.x, land.pos.y);
 		batch.end();
