@@ -16,7 +16,7 @@ public class solarObject {
     public solarObject(double mass,float x, float y)
     {
         pos = new Vector2(0f,0f);
-        vel = new Vector2(0f,0f);
+        this.vel = new Vector2(0f,0f);
         this.mass = mass;
         this.color = new Color();
     }
@@ -24,31 +24,22 @@ public class solarObject {
     {
         return Math.sqrt(Math.abs(Math.pow(ob1.pos.x - ob2.pos.x,2) + Math.pow(ob1.pos.y - ob2.pos.y,2)));
     }
-    public double Gravity(solarObject ob1)
+    public Vector2 Gravity(solarObject ob2)
     {
-        double distance = getDistance(ob1,this);
-        double grav = (G*ob1.mass*this.mass)/Math.pow(distance,2);
-        return grav;
+        Vector2 gravForce = new Vector2(0f,0f);
+        double distance = getDistance(ob2,this);
+        double grav = (G*ob2.mass*this.mass)/Math.pow(distance,2);
+        float xDir = this.pos.x-ob2.pos.x;
+        float yDir = this.pos.y-ob2.pos.y;
+        float mag = (float) Math.sqrt(Math.pow(xDir,2)+Math.pow(yDir,2));
+        gravForce.x= (float) (((xDir/mag)*grav)/ob2.mass);
+        gravForce.y = (float) (((yDir/mag)*grav)/ob2.mass);
+
+        return gravForce;
     }
-    public void gravVel(double grav, solarObject ob1)
+    public void gravVel(Vector2 gravForce, solarObject ob1)
     {
-        if(ob1.pos.x>pos.x)
-        {
-            ob1.vel.x-=grav;
-        }
-        if(ob1.pos.x<pos.x)
-        {
-            ob1.vel.x+=grav;
-        }
-        if(ob1.pos.y>pos.y)
-        {
-            ob1.vel.y-=grav;
-        }
-        if(ob1.pos.y<pos.y)
-        {
-            ob1.vel.y+=grav;
-        }
-        ob1.pos.add(ob1.vel);
+        ob1.vel.add(gravForce);
     }
     public void orbit()
     {
