@@ -18,6 +18,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class SolarLander extends ApplicationAdapter {
@@ -42,6 +44,9 @@ public class SolarLander extends ApplicationAdapter {
 	private ExtendViewport extendView;
 	private ScreenViewport screenView;
 	private OrthographicCamera orthoCam;
+	private OrthographicCamera miniCam;
+	private FitViewport miniView;
+
 	//objects
 	Lander land = new Lander(1,400,400);
 	solarObject[] solarSystem;
@@ -85,7 +90,11 @@ public class SolarLander extends ApplicationAdapter {
 		orthoCam.position.set(land.pos.x,land.pos.y,0);
 		orthoCam.update();
 		screenView = new ScreenViewport(); //UI viewport
-
+		miniCam = new OrthographicCamera();
+		miniView = new FitViewport(5000,5000,miniCam);
+		miniCam.position.set(extendView.getWorldWidth() - miniView.getWorldWidth()/2f,miniView.getWorldHeight()/2f,0);
+		miniCam.update();
+		miniView.setScreenBounds(Gdx.graphics.getWidth()-120,20,100,100);
 		//UI
 		stage = new Stage(screenView, batch);
 		Gdx.input.setInputProcessor(stage);
@@ -129,6 +138,7 @@ public class SolarLander extends ApplicationAdapter {
 	{
 		extendView.update(width, height,true);
 		screenView.update(width, height, true);
+		miniView.setScreenBounds(Gdx.graphics.getWidth()-500,20,500,500);
 		land.Sx = width;
 		land.Sy = height;
 	}
@@ -153,7 +163,7 @@ public class SolarLander extends ApplicationAdapter {
 		for(solarObject ob: solarSystem)
 		{
 			solarRender.hitBoxRender(ob.hitBox);	//planet hitboxes
-			solarRender.orbitRender(land,ob); //orbit path
+			//solarRender.orbitRender(land,ob); //orbit path
 		}
 		solarRender.hitBoxRender(land.hitBox);
 		rend.end();
@@ -188,6 +198,18 @@ public class SolarLander extends ApplicationAdapter {
 			ui.obLabelUpdate(solarLabels.get(i),solarSystem[i],i);
 		}
 		stage.draw();
+		miniCam.position.set(solarSystem[2].pos.x*(miniView.getScreenX()/extendView.getWorldWidth()),solarSystem[2].pos.y*(miniView.getScreenX()/extendView.getWorldWidth()),0);
+		miniCam.update();
+		miniView.apply();
+		rend.setProjectionMatrix(miniView.getCamera().combined);
+		rend.begin(ShapeRenderer.ShapeType.Filled);
+		for(solarObject ob: solarSystem)
+		{
+			solarRender.miniRend(ob, miniView,extendView);
+		}
+		solarRender.landerMiniRend(land,miniView,extendView);
+		rend.end();
+
 	}
 	@Override
 	public void dispose () {
