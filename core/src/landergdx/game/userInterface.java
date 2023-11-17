@@ -27,4 +27,8 @@ public class userInterface {
     {
         label.setText("Lander: "+"\n"+"Velx: "+land.vel.x+"\n"+"Vely: "+land.vel.y+"\n"+"X: "+land.pos.x+"\n"+"Y: "+land.pos.y);
     }
+    public void obLabelUpdate(Label label,solarObject ob, int i)
+    {
+        label.setText("Planet " +(i+1)+":"+ "\n"+"Velx: "+ob.vel.x+"\n"+"Vely: "+ob.vel.y+"\n"+"X: "+ob.pos.x+"\n"+"Y: "+ob.pos.y+"\n"+"Mass: "+ob.mass);
+    }
 }

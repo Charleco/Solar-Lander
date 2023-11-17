@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import java.util.ArrayList;
 import java.util.Random;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -44,11 +45,12 @@ public class SolarLander extends ApplicationAdapter {
 	//objects
 	Lander land = new Lander(1,400,400);
 	solarObject[] solarSystem;
+	ArrayList<Label> solarLabels;
 	ShapeRenderer rend;
 	solarRender solarRender;
 	@Override
 	public void create () {
-
+		Random rand = new Random();
 		//textures
 		batch = new SpriteBatch();
 		landerImg = new Texture("Lunar Lander.png");
@@ -63,18 +65,23 @@ public class SolarLander extends ApplicationAdapter {
 		rend = new ShapeRenderer();
 		solarRender = new solarRender(rend);
 		//planet creation
-		solarSystem = new Planet[1];
-		Random rand = new Random();
-
-		for(int i = 0 ; i < solarSystem.length;i++)
+		solarSystem = new Planet[2];
+		for(int i =0;i<solarSystem.length;i++)
 		{
-			int coords = rand.nextInt(800);
-			solarSystem[i] = new Planet(8.3477e11,coords,coords,60);
-			System.out.println(coords);
+			float plX = rand.nextFloat(1000);
+			float plY = rand.nextFloat(1000);
+			float plRad = rand.nextFloat() *(120-60)+60;
+			double plMass = rand.nextDouble(8e12-7e11)+7e11;
+
+			float red = rand.nextFloat();
+			float green = rand.nextFloat();
+			float blue = rand.nextFloat();
+			Color plColor = new Color(red,green,blue,1f);
+			solarSystem[i] = new Planet(plMass,plX,plY,plRad,plColor);
 		}
 		//Camera and Viewports
 		orthoCam = new OrthographicCamera();
-		extendView = new ExtendViewport(900,900, orthoCam); //Batch viewport
+		extendView = new ExtendViewport(900,900, orthoCam); //Batch/World viewport
 		orthoCam.position.set(land.pos.x,land.pos.y,0);
 		orthoCam.update();
 		screenView = new ScreenViewport(); //UI viewport
@@ -100,9 +107,19 @@ public class SolarLander extends ApplicationAdapter {
 		Label.LabelStyle labelStyle = new Label.LabelStyle(labelFont, Color.WHITE);
 		velocityLabel = new Label("test",labelStyle);
 		debugLabel = new Label("test",labelStyle);
-		table.add(velocityLabel).growX().space(10).padLeft(5);
+		table.add(velocityLabel).growX().space(10).padLeft(5).uniform();
+		solarLabels = new ArrayList<>();
 		table.row();
-		table.add(debugLabel).growX().space(10).padLeft(5);
+		table.add(debugLabel).growX().space(10).padLeft(5).uniform();
+		for(solarObject ob: solarSystem)
+		{
+			table.row();
+			Label obLabel = new Label("test",labelStyle);
+			obLabel.setWrap(true);
+			solarLabels.add(obLabel);
+			table.add(obLabel).growX().space(10).padLeft(5).uniform();
+		}
+
 		debugLabel.setWrap(true);
 		velocityLabel.setWrap(true);
 		ui = new userInterface();
@@ -128,9 +145,8 @@ public class SolarLander extends ApplicationAdapter {
 		rend.begin(ShapeRenderer.ShapeType.Filled);
 		for(solarObject ob : solarSystem)
 		{
-			rend.setColor(Color.BLUE);
+			rend.setColor(ob.color);
 			rend.circle(ob.pos.x, ob.pos.y, ob.radius);
-			System.out.println("X: "+ob.pos.x+" Y: "+ob.pos.y);
 		}
 		rend.end();
 		rend.begin(ShapeRenderer.ShapeType.Line);
@@ -158,7 +174,7 @@ public class SolarLander extends ApplicationAdapter {
 		land.hitboxUpdate();
 		for(solarObject ob:solarSystem)
 		{
-			land.crashTest(ob.hitBox,land.hitBox);
+			land.crashTest(ob.hitBox);
 		}
 		batch.draw(currentFrame, land.pos.x, land.pos.y);
 		batch.end();
@@ -167,6 +183,10 @@ public class SolarLander extends ApplicationAdapter {
 		stage.act(Gdx.graphics.getDeltaTime());
 		ui.velLabelUpdate(velocityLabel,land);
 		ui.debugUpdate(debugLabel);
+		for(int i =0; i<solarSystem.length;i++)
+		{
+			ui.obLabelUpdate(solarLabels.get(i),solarSystem[i],i);
+		}
 		stage.draw();
 	}
 	@Override

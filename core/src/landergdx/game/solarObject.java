@@ -1,8 +1,8 @@
 package landergdx.game;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Shape2D;
 import com.badlogic.gdx.math.Vector2;
 
 public class solarObject {
@@ -12,11 +12,13 @@ public class solarObject {
     public Circle hitBox;
     public final double G = 6.674e-11;
     public float radius;
+    public Color color;
     public solarObject(double mass,float x, float y)
     {
         pos = new Vector2(0f,0f);
         vel = new Vector2(0f,0f);
         this.mass = mass;
+        this.color = new Color();
     }
     public double getDistance(solarObject ob1,solarObject ob2)
     {
@@ -57,10 +59,10 @@ public class solarObject {
         hitBox.x = pos.x;
         hitBox.y = pos.y;
     }
-    public boolean crashTest(Circle ob1Box, Circle ob2Box)
+    public boolean crashTest(Circle ob1Box)
     {
 
-        if(Intersector.overlaps(ob1Box, ob2Box))
+        if(Intersector.overlaps(ob1Box, this.hitBox))
         {
             vel.y= -(vel.y);
             vel.x= -(vel.x);

@@ -24,7 +24,7 @@ public class solarRender {
     public void orbitRender(Lander land, solarObject ob)
     {
         double velocity = (land.vel.y+land.vel.x);
-        rend.setColor(0,0,1,1);
+        rend.setColor(ob.color);
         if(velocity!=0)
         {
             double r = (ob.G * ob.mass) / Math.pow(velocity, 2);
