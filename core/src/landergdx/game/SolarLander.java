@@ -19,7 +19,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class SolarLander extends ApplicationAdapter {
@@ -59,7 +58,7 @@ public class SolarLander extends ApplicationAdapter {
 	{
 		extendView.update(width, height,true);
 		screenView.update(width, height, true);
-		miniView.setScreenBounds(Gdx.graphics.getWidth()-500,20,500,500);
+		miniView.setScreenBounds((int) (Gdx.graphics.getWidth()-(Gdx.graphics.getWidth()/4)),((Gdx.graphics.getHeight()/96)), Gdx.graphics.getWidth()/4,Gdx.graphics.getWidth()/4);
 		land.Sx = width;
 		land.Sy = height;
 	}
@@ -95,7 +94,6 @@ public class SolarLander extends ApplicationAdapter {
 		miniView = new FitViewport(5000,5000,miniCam);
 		miniCam.position.set(extendView.getWorldWidth() - miniView.getWorldWidth()/2f,miniView.getWorldHeight()/2f,0);
 		miniCam.update();
-		miniView.setScreenBounds(Gdx.graphics.getWidth()-120,20,100,100);
 		//UI
 		stage = new Stage(screenView, batch);
 		Gdx.input.setInputProcessor(stage);
@@ -237,14 +235,19 @@ public class SolarLander extends ApplicationAdapter {
 	}
 	public void miniRender()
 	{
-		miniCam.position.set(solarSystem[2].pos.x*(miniView.getScreenX()/extendView.getWorldWidth()),solarSystem[2].pos.y*(miniView.getScreenX()/extendView.getWorldWidth()),0);
+		//miniCam.position.set(solarSystem[2].pos.x*(miniView.getScreenX()/extendView.getWorldWidth()),solarSystem[2].pos.y*(miniView.getScreenX()/extendView.getWorldWidth()),0);
+		miniCam.position.set(miniView.getWorldWidth()/2,miniView.getWorldHeight()/2,0);
 		miniCam.update();
 		miniView.apply();
 		rend.setProjectionMatrix(miniView.getCamera().combined);
+		rend.begin(ShapeRenderer.ShapeType.Filled);
+		rend.setColor(Color.BLUE);
+		rend.rect((miniView.getCamera().position.x-miniView.getCamera().position.x)+5,(miniView.getCamera().position.y-miniView.getCamera().position.y)+2,miniView.getWorldWidth()-10,miniView.getWorldHeight()-10);
+		rend.end();
 		rend.begin(ShapeRenderer.ShapeType.Line);
 		rend.setColor(Color.WHITE);
-		rend.rect((miniView.getWorldWidth()+miniView.getScreenX()-2),0,miniView.getWorldWidth()-2,miniView.getWorldHeight()-2);
-		System.out.println("Screen Width: "+miniView.getScreenWidth()+" World Width: "+miniView.getWorldWidth());
+		rend.rect((miniView.getCamera().position.x-miniView.getCamera().position.x)+5,(miniView.getCamera().position.y-miniView.getCamera().position.y)+2,miniView.getWorldWidth()-10,miniView.getWorldHeight()-10);
+		System.out.println("Screen Width: "+miniView.getScreenWidth()+" World Width: "+miniView.getWorldWidth() + "miniCam x: "+miniView.getCamera().position.x);
 		rend.end();
 		rend.setProjectionMatrix(miniView.getCamera().combined);
 		rend.begin(ShapeRenderer.ShapeType.Filled);
@@ -252,6 +255,8 @@ public class SolarLander extends ApplicationAdapter {
 		{
 			solarRender.miniRend(ob, miniView,extendView);
 		}
+		rend.setColor(Color.VIOLET);
+		rend.circle(miniCam.position.x,miniCam.position.y,20);
 		solarRender.landerMiniRend(land,miniView,extendView);
 		rend.end();
 	}
