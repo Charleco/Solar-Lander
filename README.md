@@ -1,4 +1,5 @@
 # Solar-Lander
-a small libGDX project featuring a small craft trying to land on a moon/planet
+a small libGDX orbit-sim project with a controllable lander 
 
 ![](assets/preview.png)
+![](assets/preview2.png)
