@@ -237,7 +237,7 @@ public class SolarLander extends ApplicationAdapter {
 		//minimap icons
 		rend.begin(ShapeRenderer.ShapeType.Filled);
 		for(solarObject ob: solarSystem)
-			solarRender.miniRend(ob, miniView,extendView);
+			solarRender.miniRend(ob);
 		solarRender.landerMiniRend(land,miniView,extendView);
 		rend.end();
 	}

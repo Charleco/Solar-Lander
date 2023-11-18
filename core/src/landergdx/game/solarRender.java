@@ -31,9 +31,9 @@ public class solarRender {
             rend.circle(ob.pos.x,ob.pos.y, (float) (ob.getDistance(land,ob)));
         }
     }
-    public void miniRend(solarObject ob, FitViewport miniMap, ExtendViewport map)
+    public void miniRend(solarObject ob)
     {
-        float scale = miniMap.getScreenX()/map.getWorldWidth();
+        float scale =.25f;
         float miniX = ob.pos.x * scale;
         float miniY = ob.pos.y * scale;
         float miniRad = ob.radius * scale;
