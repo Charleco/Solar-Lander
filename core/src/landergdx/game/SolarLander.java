@@ -134,9 +134,9 @@ public class SolarLander extends ApplicationAdapter {
 		solarSystem = new Planet[3];
 		for(int i =0;i<solarSystem.length-1;i++)
 		{
-			float plX = rand.nextFloat(1000);
-			float plY = rand.nextFloat(1000);
-			float plRad = rand.nextFloat() *(120-60)+60;
+			float plX = rand.nextFloat(10000);
+			float plY = rand.nextFloat(10000);
+			float plRad = rand.nextFloat() *(400-300)+300;
 			double plMass = rand.nextDouble(8e12-7e11)+7e11;
 
 			float red = rand.nextFloat();
@@ -146,7 +146,7 @@ public class SolarLander extends ApplicationAdapter {
 
 			solarSystem[i] = new Planet(plMass,plX,plY,plRad,plColor);
 		}
-		solarSystem[2] = new Planet(10e12,2000,2000,200,Color.YELLOW);
+		solarSystem[2] = new Planet(10e12,10000,10000,800,Color.YELLOW);
 	}
 	public void setUpObjects()
 	{
@@ -164,11 +164,23 @@ public class SolarLander extends ApplicationAdapter {
 	///////////////////////////////////////////////////
 	public void extendRender()
 	{
+		land.fly();
+		for(solarObject ob:solarSystem)
+			land.crashTest(ob.hitBox);
+		for(int i =0;i<solarSystem.length-1;i++) {
+			solarSystem[2].gravVel((solarSystem[2].Gravity(solarSystem[i])),solarSystem[i]);
+			solarSystem[i].gravVel((solarSystem[i].Gravity(solarSystem[2])),solarSystem[2]);
+		}
+		land.hitboxUpdate();
+		for(solarObject ob:solarSystem) {
+			ob.gravVel((ob.Gravity(land)), land); // Gravity Between Planets and Lander
+			ob.orbit();
+			ob.hitboxUpdate();
+		}
 		extendCam.position.set(land.pos.x, land.pos.y, 0);
 		extendCam.update();
 		extendView.apply();
-		land.fly(); // lander movement
-
+		// shape rendering(planets)
 		rend.setProjectionMatrix(extendView.getCamera().combined);
 		rend.setAutoShapeType(false);
 		rend.begin(ShapeRenderer.ShapeType.Filled);
@@ -178,7 +190,6 @@ public class SolarLander extends ApplicationAdapter {
 			rend.circle(ob.pos.x, ob.pos.y, ob.radius); //draw the planets
 		}
 		rend.end();
-
 		rend.begin(ShapeRenderer.ShapeType.Line);
 		for(solarObject ob: solarSystem) {
 			solarRender.hitBoxRender(ob.hitBox);	//planet hitboxes
@@ -186,35 +197,21 @@ public class SolarLander extends ApplicationAdapter {
 		}
 		solarRender.hitBoxRender(land.hitBox);
 		rend.end();
-
-		for(solarObject ob:solarSystem)
-			land.crashTest(ob.hitBox);
-
+		//batch rendering(lander)
 		batch.setProjectionMatrix(extendView.getCamera().combined);
 		batch.begin();
 		TextureRegion currentFrame = (land.thrusters(idling.getAnim(), thrusters.getAnim())).getKeyFrame(stateTime, true);
-
-		for(solarObject ob:solarSystem) {
-			ob.gravVel((ob.Gravity(land)), land); // Gravity Between Planets and Lander
-			ob.orbit();
-			ob.hitboxUpdate();
-		}
-		for(int i =0;i<solarSystem.length-1;i++) {
-			solarSystem[2].gravVel((solarSystem[2].Gravity(solarSystem[i])),solarSystem[i]);
-			solarSystem[i].gravVel((solarSystem[i].Gravity(solarSystem[2])),solarSystem[2]);
-		}
-		land.hitboxUpdate();
 		batch.draw(currentFrame, land.pos.x, land.pos.y);
 		batch.end();
 	}
 	public void uiRender()
 	{
 		screenView.apply();
-		stage.act(Gdx.graphics.getDeltaTime());
-		ui.velLabelUpdate(velocityLabel,land); // Lander Stats
-		ui.debugUpdate(debugLabel); //Memory,Window,Etc
 		for(int i =0; i<solarSystem.length;i++)
 			ui.obLabelUpdate(solarLabels.get(i),solarSystem[i],i); //Planet Stats
+		ui.debugUpdate(debugLabel); //Memory,Window,Etc
+		ui.velLabelUpdate(velocityLabel,land); // Lander Stats
+		stage.act(Gdx.graphics.getDeltaTime());
 		stage.draw();
 	}
 	public void miniRender()
