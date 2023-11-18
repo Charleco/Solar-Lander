@@ -3,9 +3,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-
 import static com.badlogic.gdx.Input.Keys.SPACE;
 
 public class solarRender {
@@ -21,15 +18,10 @@ public class solarRender {
             rend.circle(hitBox.x,hitBox.y,hitBox.radius);
         }
     }
-    public void orbitRender(Lander land, solarObject ob)
+    public void orbitRender(solarObject ob1, solarObject ob2)
     {
-        double velocity = (land.vel.y+land.vel.x);
-        rend.setColor(ob.color);
-        if(velocity!=0)
-        {
-            double r = (ob.G * ob.mass) / Math.pow(velocity, 2);
-            rend.circle(ob.pos.x,ob.pos.y, (float) (ob.getDistance(land,ob)));
-        }
+        rend.setColor(ob2.color);
+        rend.circle(ob2.pos.x,ob2.pos.y,ob1.getDistance(ob1,ob2));
     }
     public void miniRend(solarObject ob)
     {
@@ -40,9 +32,9 @@ public class solarRender {
         rend.setColor(ob.color);
         rend.circle(miniX,miniY,miniRad);
     }
-    public void landerMiniRend(Lander land, FitViewport miniMap,ExtendViewport map)
+    public void landerMiniRend(Lander land)
     {
-        float scale = miniMap.getScreenX()/map.getWorldWidth();
+        float scale = .25f;
         rend.setColor(Color.WHITE);
         float miniX = land.pos.x * scale;
         float miniY = land.pos.y * scale;

@@ -20,9 +20,9 @@ public class solarObject {
         this.mass = mass;
         this.color = new Color();
     }
-    public double getDistance(solarObject ob1,solarObject ob2)
+    public float getDistance(solarObject ob1,solarObject ob2)
     {
-        return Math.sqrt(Math.abs(Math.pow(ob1.pos.x - ob2.pos.x,2) + Math.pow(ob1.pos.y - ob2.pos.y,2)));
+        return (float) Math.sqrt(Math.abs(Math.pow(ob1.pos.x - ob2.pos.x,2) + Math.pow(ob1.pos.y - ob2.pos.y,2)));
     }
     public Vector2 Gravity(solarObject ob2)
     {

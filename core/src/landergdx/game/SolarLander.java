@@ -235,7 +235,7 @@ public class SolarLander extends ApplicationAdapter {
 		rend.begin(ShapeRenderer.ShapeType.Filled);
 		for(solarObject ob: solarSystem)
 			solarRender.miniRend(ob);
-		solarRender.landerMiniRend(land,miniView,extendView);
+		solarRender.landerMiniRend(land);
 		rend.end();
 	}
 

@@ -54,4 +54,9 @@ public class Lander  extends solarObject{
         hitBox.x = pos.x+16;
         hitBox.y = pos.y+16;
     }
+    public float getDistance(solarObject ob1,solarObject ob2)
+    {
+        return (float) Math.sqrt(Math.abs(Math.pow((this.pos.x+16) - ob2.pos.x,2) + Math.pow((this.pos.y+16) - ob2.pos.y,2)));
+    }
+
 }
