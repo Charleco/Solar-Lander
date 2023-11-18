@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -27,8 +26,8 @@ public class SolarLander extends ApplicationAdapter {
 	Texture landerImg;
 	Texture thrusterSheet;
 	//animations
-	Animation<TextureRegion> thrusters;
-	Animation<TextureRegion> idle;
+	sprAnim thrusters;
+	sprAnim idling;
 	float stateTime;
 	//UI
 	private Stage stage;
@@ -39,7 +38,6 @@ public class SolarLander extends ApplicationAdapter {
 	private ExtendViewport extendView;
 	private ScreenViewport screenView;
 	private OrthographicCamera extendCam;
-	private OrthographicCamera miniCam;
 	private FitViewport miniView;
 	private Lander land;
 	//objects
@@ -52,13 +50,13 @@ public class SolarLander extends ApplicationAdapter {
 		stateTime = 0f;
 		this.setUpObjects(); //Lander/Sprites
 		this.generateSystem(); //Planets
-		this.createUi(); //UI
+		this.createUi();
 	}
 	public void resize(int width, int height)
 	{
 		extendView.update(width, height,true);
 		screenView.update(width, height, true);
-		miniView.setScreenBounds((int) (Gdx.graphics.getWidth()-(Gdx.graphics.getWidth()/4)),((Gdx.graphics.getHeight()/96)), Gdx.graphics.getWidth()/4,Gdx.graphics.getWidth()/4);
+		miniView.setScreenBounds((Gdx.graphics.getWidth()-(Gdx.graphics.getWidth()/4)),((Gdx.graphics.getHeight()/96)), Gdx.graphics.getWidth()/4,Gdx.graphics.getWidth()/4);
 		land.Sx = width;
 		land.Sy = height;
 	}
@@ -69,7 +67,6 @@ public class SolarLander extends ApplicationAdapter {
 		this.extendRender();
 		this.uiRender();
 		this.miniRender();
-
 	}
 	@Override
 	public void dispose () {
@@ -86,17 +83,18 @@ public class SolarLander extends ApplicationAdapter {
 	public void createUi()
 	{
 		extendCam = new OrthographicCamera();
-		extendView = new ExtendViewport(900,900, extendCam); //Batch/World viewport
+		extendView = new ExtendViewport(900,900, extendCam); //Batch/World
 		extendCam.position.set(land.pos.x,land.pos.y,0);
 		extendCam.update();
 		screenView = new ScreenViewport(); //UI viewport
-		miniCam = new OrthographicCamera();
-		miniView = new FitViewport(5000,5000,miniCam);
-		miniCam.position.set(extendView.getWorldWidth() - miniView.getWorldWidth()/2f,miniView.getWorldHeight()/2f,0);
+		OrthographicCamera miniCam = new OrthographicCamera();
+		miniView = new FitViewport(5000,5000, miniCam); //Minimap
+		miniCam.position.set(miniView.getWorldWidth()/2,miniView.getWorldHeight()/2,0);
 		miniCam.update();
-		//UI
+
 		stage = new Stage(screenView, batch);
 		Gdx.input.setInputProcessor(stage);
+		ui = new userInterface();
 
 		Table root = new Table();
 		root.setFillParent(true);
@@ -113,32 +111,26 @@ public class SolarLander extends ApplicationAdapter {
 		parameter.size = 15;
 		BitmapFont labelFont = generator.generateFont(parameter);
 		Label.LabelStyle labelStyle = new Label.LabelStyle(labelFont, Color.WHITE);
-		velocityLabel = new Label("test",labelStyle);
-		debugLabel = new Label("test",labelStyle);
+
+		velocityLabel = new Label("",labelStyle);
+		debugLabel = new Label("",labelStyle);
 		table.add(velocityLabel).growX().space(10).padLeft(5).uniform();
 		solarLabels = new ArrayList<>();
 		table.row();
 		table.add(debugLabel).growX().space(10).padLeft(5).uniform();
-		for(solarObject ob: solarSystem)
-		{
+
+		for(int i=0;i<solarSystem.length;i++) {
 			table.row();
 			Label obLabel = new Label("test",labelStyle);
-			obLabel.setWrap(true);
 			solarLabels.add(obLabel);
 			table.add(obLabel).growX().space(10).padLeft(5).uniform();
 		}
-
-		debugLabel.setWrap(true);
-		velocityLabel.setWrap(true);
-		ui = new userInterface();
 	}
 	public void generateSystem()
 	{
-
 		rend = new ShapeRenderer();
 		solarRender = new solarRender(rend);
 		Random rand = new Random();
-		//planet creation REMEMER I CHANGED THIS
 		solarSystem = new Planet[3];
 		for(int i =0;i<solarSystem.length-1;i++)
 		{
@@ -151,6 +143,7 @@ public class SolarLander extends ApplicationAdapter {
 			float green = rand.nextFloat();
 			float blue = rand.nextFloat();
 			Color plColor = new Color(red,green,blue,1f);
+
 			solarSystem[i] = new Planet(plMass,plX,plY,plRad,plColor);
 		}
 		solarSystem[2] = new Planet(10e12,2000,2000,200,Color.YELLOW);
@@ -162,10 +155,8 @@ public class SolarLander extends ApplicationAdapter {
 		landerImg = new Texture("Lunar Lander.png");
 		thrusterSheet = new Texture("Lunar Lander thruster.png");
 		//animations
-		sprAnim thruster = new sprAnim();
-		sprAnim idling = new sprAnim();
-		thrusters = thruster.getAnim(1,3,thrusterSheet,.1f);
-		idle = idling.getAnim(1,1,landerImg,.1f);
+		thrusters = new sprAnim(thrusterSheet,1,3,.1f);
+		idling = new sprAnim(landerImg,1,1,.1f);
 		land = new Lander(1,400,400);
 	}
 	///////////////////////////////////////////////////
@@ -176,48 +167,43 @@ public class SolarLander extends ApplicationAdapter {
 		extendCam.position.set(land.pos.x, land.pos.y, 0);
 		extendCam.update();
 		extendView.apply();
-		//draw the planets
+		land.fly(); // lander movement
+
 		rend.setProjectionMatrix(extendView.getCamera().combined);
 		rend.setAutoShapeType(false);
 		rend.begin(ShapeRenderer.ShapeType.Filled);
 		for(solarObject ob : solarSystem)
 		{
 			rend.setColor(ob.color);
-			rend.circle(ob.pos.x, ob.pos.y, ob.radius);
+			rend.circle(ob.pos.x, ob.pos.y, ob.radius); //draw the planets
 		}
 		rend.end();
+
 		rend.begin(ShapeRenderer.ShapeType.Line);
-		for(solarObject ob: solarSystem)
-		{
+		for(solarObject ob: solarSystem) {
 			solarRender.hitBoxRender(ob.hitBox);	//planet hitboxes
 			solarRender.orbitRender(land,ob); //orbit path
 		}
 		solarRender.hitBoxRender(land.hitBox);
 		rend.end();
-		//textures and actions
+
+		for(solarObject ob:solarSystem)
+			land.crashTest(ob.hitBox);
+
 		batch.setProjectionMatrix(extendView.getCamera().combined);
 		batch.begin();
-		TextureRegion currentFrame = (land.thrusters(idle, thrusters)).getKeyFrame(stateTime, true);
-		land.fly();
-		for(int i =0;i<solarSystem.length;i++)
-		{
-			solarSystem[i].gravVel((solarSystem[i].Gravity(land)),land);
-		}
-		for(solarObject ob: solarSystem)
-		{
+		TextureRegion currentFrame = (land.thrusters(idling.getAnim(), thrusters.getAnim())).getKeyFrame(stateTime, true);
+
+		for(solarObject ob:solarSystem) {
+			ob.gravVel((ob.Gravity(land)), land); // Gravity Between Planets and Lander
 			ob.orbit();
 			ob.hitboxUpdate();
 		}
-		for(int i =0;i<solarSystem.length-1;i++)
-		{
+		for(int i =0;i<solarSystem.length-1;i++) {
 			solarSystem[2].gravVel((solarSystem[2].Gravity(solarSystem[i])),solarSystem[i]);
 			solarSystem[i].gravVel((solarSystem[i].Gravity(solarSystem[2])),solarSystem[2]);
 		}
 		land.hitboxUpdate();
-		for(solarObject ob:solarSystem)
-		{
-			land.crashTest(ob.hitBox);
-		}
 		batch.draw(currentFrame, land.pos.x, land.pos.y);
 		batch.end();
 	}
@@ -225,38 +211,33 @@ public class SolarLander extends ApplicationAdapter {
 	{
 		screenView.apply();
 		stage.act(Gdx.graphics.getDeltaTime());
-		ui.velLabelUpdate(velocityLabel,land);
-		ui.debugUpdate(debugLabel);
+		ui.velLabelUpdate(velocityLabel,land); // Lander Stats
+		ui.debugUpdate(debugLabel); //Memory,Window,Etc
 		for(int i =0; i<solarSystem.length;i++)
-		{
-			ui.obLabelUpdate(solarLabels.get(i),solarSystem[i],i);
-		}
+			ui.obLabelUpdate(solarLabels.get(i),solarSystem[i],i); //Planet Stats
 		stage.draw();
 	}
 	public void miniRender()
 	{
-		//miniCam.position.set(solarSystem[2].pos.x*(miniView.getScreenX()/extendView.getWorldWidth()),solarSystem[2].pos.y*(miniView.getScreenX()/extendView.getWorldWidth()),0);
-		miniCam.position.set(miniView.getWorldWidth()/2,miniView.getWorldHeight()/2,0);
-		miniCam.update();
 		miniView.apply();
 		rend.setProjectionMatrix(miniView.getCamera().combined);
+
+		//minimap backround
 		rend.begin(ShapeRenderer.ShapeType.Filled);
 		rend.setColor(Color.BLUE);
 		rend.rect((miniView.getCamera().position.x-miniView.getCamera().position.x)+5,(miniView.getCamera().position.y-miniView.getCamera().position.y)+2,miniView.getWorldWidth()-10,miniView.getWorldHeight()-10);
 		rend.end();
+
+		//minimap border
 		rend.begin(ShapeRenderer.ShapeType.Line);
 		rend.setColor(Color.WHITE);
 		rend.rect((miniView.getCamera().position.x-miniView.getCamera().position.x)+5,(miniView.getCamera().position.y-miniView.getCamera().position.y)+2,miniView.getWorldWidth()-10,miniView.getWorldHeight()-10);
-		System.out.println("Screen Width: "+miniView.getScreenWidth()+" World Width: "+miniView.getWorldWidth() + "miniCam x: "+miniView.getCamera().position.x);
 		rend.end();
-		rend.setProjectionMatrix(miniView.getCamera().combined);
+
+		//minimap icons
 		rend.begin(ShapeRenderer.ShapeType.Filled);
 		for(solarObject ob: solarSystem)
-		{
 			solarRender.miniRend(ob, miniView,extendView);
-		}
-		rend.setColor(Color.VIOLET);
-		rend.circle(miniCam.position.x,miniCam.position.y,20);
 		solarRender.landerMiniRend(land,miniView,extendView);
 		rend.end();
 	}

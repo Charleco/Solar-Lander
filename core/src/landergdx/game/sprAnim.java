@@ -5,17 +5,24 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class sprAnim {
-    private TextureRegion[][] spritesheet;
-    private TextureRegion[] splitsheet;
-    public sprAnim()
+    private final Texture sheet;
+    private final int rowCount;
+    private final int colCount;
+    private final float fps;
+    public Animation<TextureRegion> anim;
+    public sprAnim(Texture sheet, int rowCount, int colCount, float fps)
     {
-
+        this.sheet =sheet;
+        this.rowCount=rowCount;
+        this.colCount=colCount;
+        this.fps=fps;
+        this.anim = this.setAnim();
     }
-    public Animation<TextureRegion> getAnim(int rowCount, int colCount, Texture sheet, float fps)
+    public Animation<TextureRegion> setAnim()
     {
         Animation<TextureRegion> output;
-        spritesheet = TextureRegion.split(sheet, sheet.getWidth() / colCount, sheet.getHeight() / rowCount);
-        splitsheet = new TextureRegion[colCount*rowCount];
+        TextureRegion[][] spritesheet = TextureRegion.split(sheet, sheet.getWidth() / colCount, sheet.getHeight() / rowCount);
+        TextureRegion[] splitsheet = new TextureRegion[colCount * rowCount];
         int index = 0;
         for(int i = 0; i<rowCount;i++)
         {
@@ -24,7 +31,11 @@ public class sprAnim {
                 splitsheet[index++] = spritesheet[i][j];
             }
         }
-        output = new Animation<TextureRegion>(fps, splitsheet);
+        output = new Animation<>(fps, splitsheet);
         return output;
+    }
+    public Animation<TextureRegion> getAnim()
+    {
+        return anim;
     }
 }

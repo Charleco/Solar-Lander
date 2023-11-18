@@ -50,16 +50,12 @@ public class solarObject {
         hitBox.x = pos.x;
         hitBox.y = pos.y;
     }
-    public boolean crashTest(Circle ob1Box)
+    public void crashTest(Circle ob1Box)
     {
-
         if(Intersector.overlaps(ob1Box, this.hitBox))
         {
             vel.y= -(vel.y);
             vel.x= -(vel.x);
-
-            return true;
         }
-        return false;
     }
 }
