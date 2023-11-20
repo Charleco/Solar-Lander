@@ -166,7 +166,8 @@ public class SolarLander extends ApplicationAdapter {
 	{
 		land.fly();
 		for(solarObject ob:solarSystem)
-			land.crashTest(ob.hitBox);
+			land.crashTest(ob);
+
 		for(int i =0;i<solarSystem.length-1;i++) {
 			solarSystem[2].gravVel((solarSystem[2].Gravity(solarSystem[i])),solarSystem[i]);
 			solarSystem[i].gravVel((solarSystem[i].Gravity(solarSystem[2])),solarSystem[2]);

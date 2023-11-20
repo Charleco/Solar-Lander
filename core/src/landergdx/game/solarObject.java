@@ -1,5 +1,6 @@
 package landergdx.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
@@ -50,12 +51,32 @@ public class solarObject {
         hitBox.x = pos.x;
         hitBox.y = pos.y;
     }
-    public void crashTest(Circle ob1Box)
+    public void crashTest(solarObject ob2)
     {
-        if(Intersector.overlaps(ob1Box, this.hitBox))
+        if(Intersector.overlaps(this.hitBox,ob2.hitBox))
         {
-            vel.y= -(vel.y);
-            vel.x= -(vel.x);
+            double angle = Math.atan2((this.pos.y-ob2.pos.y),(this.pos.x-ob2.pos.x));
+
+            if(this.mass<ob2.mass)
+            {
+                Gdx.app.log("Collision","From "+this.pos.x + " "+this.pos.y );
+                this.pos.x += (float) (Math.cos(angle)*(this.getDistance(this,ob2)-(ob2.radius)));
+                this.pos.y += (float) (Math.sin(angle)*(this.getDistance(this,ob2)-(ob2.radius)));
+                this.vel.x = -this.vel.x;
+                this.vel.y = -this.vel.y;
+                Gdx.app.log("Collision","To "+this.pos.x + " "+this.pos.y );
+            }
+            else
+            {
+                Gdx.app.log("Collision","From "+ob2.pos.x + " "+ob2.pos.y );
+                ob2.pos.x += (float) (Math.cos(angle) * (this.getDistance(this, ob2) - (this.radius)));
+                ob2.pos.y += (float) (Math.sin(angle) * (this.getDistance(this, ob2) - (this.radius)));
+                ob2.vel.x = -ob2.vel.x;
+                ob2.vel.y = -ob2.vel.y;
+                Gdx.app.log("Collision","To "+ob2.pos.x + " "+ob2.pos.y );
+            }
+
         }
     }
+
 }
