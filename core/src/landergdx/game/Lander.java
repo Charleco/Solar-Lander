@@ -18,11 +18,12 @@ public class Lander  extends solarObject{
         pos.y = y;
         vel.x = 0;
         vel.y = 0;
+        radius = 16;
         hitBox = new Circle(pos.x+16,pos.y+16,16);
     }
     public void fly()
     {
-        accel =1f;
+        accel = 1f;
         if(Gdx.input.isKeyPressed(Keys.A))
         {
             vel.x-= 1*Gdx.graphics.getDeltaTime();

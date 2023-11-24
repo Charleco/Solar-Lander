@@ -4,9 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 
-public class solarObject {
+public abstract class solarObject {
     public Vector2 pos;
     public Vector2 vel;
     public final double mass;
@@ -20,6 +21,7 @@ public class solarObject {
         this.vel = new Vector2(0f,0f);
         this.mass = mass;
         this.color = new Color();
+        this.radius = 0f;
     }
     public float getDistance(solarObject ob1,solarObject ob2)
     {
@@ -53,29 +55,29 @@ public class solarObject {
     }
     public void crashTest(solarObject ob2)
     {
+
         if(Intersector.overlaps(this.hitBox,ob2.hitBox))
         {
-            double angle = Math.atan2((this.pos.y-ob2.pos.y),(this.pos.x-ob2.pos.x));
-
             if(this.mass<ob2.mass)
             {
-                Gdx.app.log("Collision","From "+this.pos.x + " "+this.pos.y );
-                this.pos.x += (float) (Math.cos(angle)*(this.getDistance(this,ob2)-(ob2.radius)));
-                this.pos.y += (float) (Math.sin(angle)*(this.getDistance(this,ob2)-(ob2.radius)));
-                this.vel.x = -this.vel.x;
-                this.vel.y = -this.vel.y;
-                Gdx.app.log("Collision","To "+this.pos.x + " "+this.pos.y );
+                float dist = this.radius + ob2.radius - this.getDistance(this,ob2);
+                this.pos.x -= (ob2.pos.x - this.pos.x) * dist / (2 * this.radius);
+                this.pos.y -= (ob2.pos.y - this.pos.y) * dist / (2 * this.radius);
+                if(Math.abs(this.vel.x)>Math.abs(this.vel.y))
+                    this.vel.x *= -1;
+                else
+                    this.vel.y *=-1;
             }
             else
             {
-                Gdx.app.log("Collision","From "+ob2.pos.x + " "+ob2.pos.y );
-                ob2.pos.x += (float) (Math.cos(angle) * (this.getDistance(this, ob2) - (this.radius)));
-                ob2.pos.y += (float) (Math.sin(angle) * (this.getDistance(this, ob2) - (this.radius)));
-                ob2.vel.x = -ob2.vel.x;
-                ob2.vel.y = -ob2.vel.y;
-                Gdx.app.log("Collision","To "+ob2.pos.x + " "+ob2.pos.y );
+                float dist = ob2.radius + this.radius - ob2.getDistance(ob2,this);
+                ob2.pos.x -= (this.pos.x - ob2.pos.x) * dist / (2 * ob2.radius);
+                ob2.pos.y -= (this.pos.y - ob2.pos.y) * dist / (2 * ob2.radius);
+                if(Math.abs(ob2.vel.x)>Math.abs(ob2.vel.y))
+                    ob2.vel.x *= -1;
+                else
+                    ob2.vel.y *=-1;
             }
-
         }
     }
 
