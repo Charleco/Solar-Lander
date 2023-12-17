@@ -132,7 +132,7 @@ public class SolarLander extends ApplicationAdapter {
 		rend = new ShapeRenderer();
 		solarRender = new solarRender(rend);
 
-		solarSystem = new solarObject[10];
+		solarSystem = new solarObject[7];
 		solarSystem[0] = new Planet(15000f,10000,10000,800,Color.YELLOW);
 		for(int i =1;i<solarSystem.length;i++)
 		{
@@ -145,7 +145,6 @@ public class SolarLander extends ApplicationAdapter {
 				}
 			}
 		}
-
 		for(int i =1;i<solarSystem.length;i++) {
 			solarSystem[i].setStartVel(solarSystem[0]);
 		}
@@ -155,14 +154,13 @@ public class SolarLander extends ApplicationAdapter {
 		Random rand = new Random();
 		float plX = rand.nextFloat(20000);
 		float plY = rand.nextFloat(20000);
-		float plRad = rand.nextFloat() *(400f-300f)+300f;
-		float plMass = rand.nextFloat(1000f-800f)+800f;
+		float plRad = rand.nextFloat() *(700f-300f)+300f;
+		float plMass = (float) (((4/3)*3.14)*plRad);
 
 		float red = rand.nextFloat();
 		float green = rand.nextFloat();
 		float blue = rand.nextFloat();
 		Color plColor = new Color(red,green,blue,1f);
-		System.out.println("New Planet:" + plX+" "+plY);
 		return new Planet(plMass,plX,plY,plRad,plColor);
 	}
 	public void setUpObjects()
@@ -211,27 +209,15 @@ public class SolarLander extends ApplicationAdapter {
 		rend.setProjectionMatrix(extendView.getCamera().combined);
 		rend.setAutoShapeType(false);
 		rend.begin(ShapeRenderer.ShapeType.Filled);
-		for(solarObject ob : solarSystem)
-		{
-			rend.setColor(ob.color);
-			rend.circle(ob.pos.x, ob.pos.y, ob.radius); //draw the planets
-		}
+		solarRender.drawPlanets(solarSystem);
 		solarRender.trailDot(solarSystem);
 		rend.end();
-		rend.begin(ShapeRenderer.ShapeType.Line);
-		for(solarObject ob: solarSystem) {
-			solarRender.hitBoxRender(ob.hitBox);	//planet hitboxes
-			solarRender.orbitRender(land,ob); //orbit path
-			solarRender.gravVectLine(ob,solarSystem[0]);
-			solarRender.velVectLine(ob);
-		}
-		if(Gdx.input.isKeyPressed(Input.Keys.V))
-		{
-			solarRender.velLanderVectLine(land);
-			solarRender.gravLanderVectLine(land,solarSystem[0]);
-		}
-		solarRender.hitBoxRender(land.hitBox);
 
+		rend.begin(ShapeRenderer.ShapeType.Line);
+		solarRender.hitBoxRender(solarSystem,land);
+		solarRender.orbitRender(land,solarSystem);
+		solarRender.vectLine(solarSystem,solarSystem[0]);
+		solarRender.landerVectLine(land,solarSystem[0]);
 		rend.end();
 	}
 	public void uiRender()
@@ -249,7 +235,7 @@ public class SolarLander extends ApplicationAdapter {
 		miniView.apply();
 		rend.setProjectionMatrix(miniView.getCamera().combined);
 
-		//minimap backround
+		//minimap background
 		rend.begin(ShapeRenderer.ShapeType.Filled);
 		rend.setColor(Color.BLACK);
 		rend.rect((miniView.getCamera().position.x-miniView.getCamera().position.x)+5,(miniView.getCamera().position.y-miniView.getCamera().position.y)+2,miniView.getWorldWidth()-10,miniView.getWorldHeight()-10);
@@ -270,8 +256,7 @@ public class SolarLander extends ApplicationAdapter {
 		rend.end();
 		rend.begin(ShapeRenderer.ShapeType.Line);
 		for(solarObject ob: solarSystem) {
-			solarRender.velMiniVectLine(ob);
-			solarRender.gravMiniVectLine(ob,solarSystem[0]);
+			solarRender.miniVectLine(ob,solarSystem[0]);
 		}
 		rend.end();
 	}
