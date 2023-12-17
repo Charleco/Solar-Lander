@@ -179,6 +179,7 @@ public class SolarLander extends ApplicationAdapter {
 			ob.hitboxUpdate();
 		}
 		extendCam.position.set(land.pos.x, land.pos.y, 0);
+		ui.camZoom(extendCam);
 		extendCam.update();
 		extendView.apply();
 		// shape rendering(planets)
@@ -196,6 +197,8 @@ public class SolarLander extends ApplicationAdapter {
 			solarRender.hitBoxRender(ob.hitBox);	//planet hitboxes
 			solarRender.orbitRender(land,ob); //orbit path
 		}
+		solarRender.gravVectLine(solarSystem[0],solarSystem[1]);
+		solarRender.velVectLine(solarSystem[0]);
 		solarRender.hitBoxRender(land.hitBox);
 		rend.end();
 		//batch rendering(lander)
