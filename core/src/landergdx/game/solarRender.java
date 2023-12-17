@@ -11,6 +11,7 @@ public class solarRender {
     final ShapeRenderer rend;
     float delta;
     HashMap<Vector2,Color> dots;
+    float scale = .25f;
     public solarRender(ShapeRenderer rend)
     {
         this.rend = rend;
@@ -31,7 +32,6 @@ public class solarRender {
     }
     public void miniRend(solarObject ob)
     {
-        float scale =.25f;
         float miniX = ob.pos.x * scale;
         float miniY = ob.pos.y * scale;
         float miniRad = ob.radius * scale;
@@ -40,7 +40,6 @@ public class solarRender {
     }
     public void landerMiniRend(Lander land)
     {
-        float scale = .25f;
         rend.setColor(Color.WHITE);
         float miniX = land.pos.x * scale;
         float miniY = land.pos.y * scale;
@@ -50,13 +49,24 @@ public class solarRender {
     {
         rend.setColor(1,0,0,1f);
         Vector2 test = new Vector2(ob1.Gravity(ob2));
-
         rend.rectLine(ob1.pos.x,ob1.pos.y,ob1.pos.x+test.x*15000,ob1.pos.y+test.y*15000,2f);
     }
     public void velVectLine(solarObject ob1)
     {
         rend.setColor(0,0,1,1f);
         rend.line(ob1.pos.x,ob1.pos.y,ob1.pos.x+ob1.vel.x*10,ob1.pos.y+ob1.vel.y*10);
+    }
+    public void velMiniVectLine(solarObject ob1)
+    {
+        rend.setColor(0,0,1,1f);
+        rend.line(ob1.pos.x*scale,ob1.pos.y*scale,(ob1.pos.x+ob1.vel.x*10)*scale,(ob1.pos.y+ob1.vel.y*10)*scale);
+    }
+    public void gravMiniVectLine(solarObject ob1, solarObject ob2)
+    {
+        rend.setColor(1,0,0,1f);
+        Vector2 test = new Vector2(ob1.Gravity(ob2));
+
+        rend.rectLine(ob1.pos.x*scale,ob1.pos.y*scale,(ob1.pos.x+test.x*15000)*scale,(ob1.pos.y+test.y*15000)*scale,2f);
     }
     public void gravLanderVectLine(Lander land, solarObject ob2)
     {

@@ -255,6 +255,12 @@ public class SolarLander extends ApplicationAdapter {
 		solarRender.landerMiniRend(land);
 		solarRender.miniDots();
 		rend.end();
+		rend.begin(ShapeRenderer.ShapeType.Line);
+		for(solarObject ob: solarSystem) {
+			solarRender.velMiniVectLine(ob);
+			solarRender.gravMiniVectLine(ob,solarSystem[0]);
+		}
+		rend.end();
 	}
 
 }
