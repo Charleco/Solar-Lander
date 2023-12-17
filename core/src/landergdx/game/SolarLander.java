@@ -174,7 +174,7 @@ public class SolarLander extends ApplicationAdapter {
 		//animations
 		thrusters = new sprAnim(thrusterSheet,1,3,.1f);
 		idling = new sprAnim(landerImg,1,1,.1f);
-		land = new Lander(1,6000,6000);
+		land = new Lander(15,6000,6000);
 	}
 	///////////////////////////////////////////////////
 	////////////// Render Functions////////////////////

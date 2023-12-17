@@ -27,8 +27,10 @@ public class solarRender {
     }
     public void orbitRender(solarObject ob1, solarObject ob2)
     {
-        rend.setColor(ob2.color);
-        rend.circle(ob2.pos.x,ob2.pos.y,ob1.getDistance(ob1,ob2));
+        if(ob1.Gravity(ob2).len()>.01f) {
+            rend.setColor(ob2.color);
+            rend.circle(ob2.pos.x, ob2.pos.y, ob1.getDistance(ob1, ob2));
+        }
     }
     public void miniRend(solarObject ob)
     {
