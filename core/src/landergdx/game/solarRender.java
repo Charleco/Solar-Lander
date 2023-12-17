@@ -4,14 +4,18 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
-
+import java.util.HashMap;
 import static com.badlogic.gdx.Input.Keys.SPACE;
 
 public class solarRender {
     final ShapeRenderer rend;
+    float delta;
+    HashMap<Vector2,Color> dots;
     public solarRender(ShapeRenderer rend)
     {
         this.rend = rend;
+        delta = 0f;
+        this.dots = new HashMap<>();
     }
     public void hitBoxRender(Circle hitBox) {
         if (Gdx.input.isKeyPressed(SPACE))
@@ -64,5 +68,32 @@ public class solarRender {
     {
         rend.setColor(0,0,1,1f);
         rend.line(land.pos.x+16,land.pos.y+16,(land.pos.x+16)+land.vel.x*10,(land.pos.y+16)+land.vel.y*10);
+    }
+    public void trailDot(solarObject[] system)
+    {
+        float curTime = Gdx.graphics.getDeltaTime();
+        delta += curTime;
+        if((delta)>2f)
+        {
+            for(solarObject ob: system)
+            {
+                dots.put(new Vector2(ob.pos),ob.color);
+            }
+            delta = 0f;
+        }
+        rend.setColor(Color.WHITE);
+        for(Vector2 pos: dots.keySet())
+        {
+            rend.setColor(dots.get(pos));
+            rend.circle(pos.x,pos.y,10);
+        }
+    }
+    public void miniDots()
+    {
+        for(Vector2 pos: dots.keySet())
+        {
+            rend.setColor(dots.get(pos));
+            rend.circle(pos.x*.25f,pos.y*.25f,10);
+        }
     }
 }

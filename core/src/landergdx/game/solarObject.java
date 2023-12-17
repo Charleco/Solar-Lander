@@ -19,7 +19,7 @@ public abstract class solarObject {
         this.mass = mass;
         vel = new Vector2(0f,0f);
         pos = new Vector2(0f,0f);
-        color = new Color();
+        color = Color.WHITE;
         radius = 0f;
     }
     public float getDistance(solarObject ob1,solarObject ob2)

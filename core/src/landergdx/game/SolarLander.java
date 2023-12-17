@@ -132,7 +132,7 @@ public class SolarLander extends ApplicationAdapter {
 		rend = new ShapeRenderer();
 		solarRender = new solarRender(rend);
 		Random rand = new Random();
-		solarSystem = new Planet[2];
+		solarSystem = new solarObject[2];
 		for(int i =1;i<solarSystem.length;i++)
 		{
 			float plX = rand.nextFloat(7000-6000)+6000;
@@ -203,6 +203,7 @@ public class SolarLander extends ApplicationAdapter {
 			rend.setColor(ob.color);
 			rend.circle(ob.pos.x, ob.pos.y, ob.radius); //draw the planets
 		}
+		solarRender.trailDot(solarSystem);
 		rend.end();
 		rend.begin(ShapeRenderer.ShapeType.Line);
 		for(solarObject ob: solarSystem) {
@@ -217,6 +218,7 @@ public class SolarLander extends ApplicationAdapter {
 			solarRender.gravLanderVectLine(land,solarSystem[0]);
 		}
 		solarRender.hitBoxRender(land.hitBox);
+
 		rend.end();
 	}
 	public void uiRender()
@@ -251,6 +253,7 @@ public class SolarLander extends ApplicationAdapter {
 		for(solarObject ob: solarSystem)
 			solarRender.miniRend(ob);
 		solarRender.landerMiniRend(land);
+		solarRender.miniDots();
 		rend.end();
 	}
 
