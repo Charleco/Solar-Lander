@@ -131,26 +131,39 @@ public class SolarLander extends ApplicationAdapter {
 	{
 		rend = new ShapeRenderer();
 		solarRender = new solarRender(rend);
-		Random rand = new Random();
-		solarSystem = new solarObject[2];
+
+		solarSystem = new solarObject[10];
+		solarSystem[0] = new Planet(15000f,10000,10000,800,Color.YELLOW);
 		for(int i =1;i<solarSystem.length;i++)
 		{
-			float plX = rand.nextFloat(7000-6000)+6000;
-			float plY = rand.nextFloat(7000-6000)+6000;
-			float plRad = rand.nextFloat() *(400f-300f)+300f;
-			float plMass = rand.nextFloat(1000f-800f)+800f;
-
-			float red = rand.nextFloat();
-			float green = rand.nextFloat();
-			float blue = rand.nextFloat();
-			Color plColor = new Color(red,green,blue,1f);
-
-			solarSystem[i] = new Planet(plMass,plX,plY,plRad,plColor);
+			solarSystem[i] = this.planetGen();
+			for(int j=0;j<i-1;j++)
+			{
+				while (!solarSystem[i].orbitCheck(solarSystem[j]))
+				{
+					solarSystem[i] = this.planetGen();
+				}
+			}
 		}
-		solarSystem[0] = new Planet(15000f,10000,10000,800,Color.YELLOW);
+
 		for(int i =1;i<solarSystem.length;i++) {
 			solarSystem[i].setStartVel(solarSystem[0]);
 		}
+	}
+	public solarObject planetGen()
+	{
+		Random rand = new Random();
+		float plX = rand.nextFloat(20000);
+		float plY = rand.nextFloat(20000);
+		float plRad = rand.nextFloat() *(400f-300f)+300f;
+		float plMass = rand.nextFloat(1000f-800f)+800f;
+
+		float red = rand.nextFloat();
+		float green = rand.nextFloat();
+		float blue = rand.nextFloat();
+		Color plColor = new Color(red,green,blue,1f);
+		System.out.println("New Planet:" + plX+" "+plY);
+		return new Planet(plMass,plX,plY,plRad,plColor);
 	}
 	public void setUpObjects()
 	{
@@ -238,7 +251,7 @@ public class SolarLander extends ApplicationAdapter {
 
 		//minimap backround
 		rend.begin(ShapeRenderer.ShapeType.Filled);
-		rend.setColor(Color.BLUE);
+		rend.setColor(Color.BLACK);
 		rend.rect((miniView.getCamera().position.x-miniView.getCamera().position.x)+5,(miniView.getCamera().position.y-miniView.getCamera().position.y)+2,miniView.getWorldWidth()-10,miniView.getWorldHeight()-10);
 		rend.end();
 
