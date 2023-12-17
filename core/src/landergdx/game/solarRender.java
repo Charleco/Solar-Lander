@@ -45,7 +45,7 @@ public class solarRender {
     public void gravVectLine(solarObject ob1, solarObject ob2)
     {
         rend.setColor(1,0,0,1f);
-        Vector2 test = new Vector2(ob1.Gravity2(ob2));
+        Vector2 test = new Vector2(ob1.Gravity(ob2));
 
         rend.rectLine(ob1.pos.x,ob1.pos.y,ob1.pos.x+test.x*15000,ob1.pos.y+test.y*15000,2f);
     }

@@ -4,10 +4,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Circle;
 public class Planet extends solarObject {
 
-    public Planet(double mass, float x, float y, float rad,Color color)
+    public Planet(float mass, float x, float y, float rad,Color color)
     {
         super(mass,x,y);
-        this.radius = rad;
+        radius = rad;
         this.color = color;
         this.pos.x = x;
         this.pos.y = y;

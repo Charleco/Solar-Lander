@@ -131,13 +131,13 @@ public class SolarLander extends ApplicationAdapter {
 		rend = new ShapeRenderer();
 		solarRender = new solarRender(rend);
 		Random rand = new Random();
-		solarSystem = new Planet[3];
-		for(int i =0;i<solarSystem.length-1;i++)
+		solarSystem = new Planet[2];
+		for(int i =1;i<solarSystem.length;i++)
 		{
-			float plX = rand.nextFloat(10000);
-			float plY = rand.nextFloat(10000);
-			float plRad = rand.nextFloat() *(400-300)+300;
-			double plMass = rand.nextDouble(8e12-7e11)+7e11;
+			float plX = rand.nextFloat(7000-6000)+6000;
+			float plY = rand.nextFloat(7000-6000)+6000;
+			float plRad = rand.nextFloat() *(400f-300f)+300f;
+			float plMass = rand.nextFloat(1000f-800f)+800f;
 
 			float red = rand.nextFloat();
 			float green = rand.nextFloat();
@@ -146,7 +146,10 @@ public class SolarLander extends ApplicationAdapter {
 
 			solarSystem[i] = new Planet(plMass,plX,plY,plRad,plColor);
 		}
-		solarSystem[2] = new Planet(10e12,10000,10000,800,Color.YELLOW);
+		solarSystem[0] = new Planet(15000f,10000,10000,800,Color.YELLOW);
+		for(int i =1;i<solarSystem.length;i++) {
+			solarSystem[i].setStartVel(solarSystem[0]);
+		}
 	}
 	public void setUpObjects()
 	{
@@ -157,7 +160,7 @@ public class SolarLander extends ApplicationAdapter {
 		//animations
 		thrusters = new sprAnim(thrusterSheet,1,3,.1f);
 		idling = new sprAnim(landerImg,1,1,.1f);
-		land = new Lander(1,400,400);
+		land = new Lander(1,6000,6000);
 	}
 	///////////////////////////////////////////////////
 	////////////// Render Functions////////////////////
@@ -165,19 +168,19 @@ public class SolarLander extends ApplicationAdapter {
 	public void extendRender()
 	{
 		land.fly();
+		land.hitboxUpdate();
 		for(solarObject ob:solarSystem)
 			land.crashTest(ob);
+		for(int i = 1;i<solarSystem.length;i++)
+		{
+			solarSystem[i].orbit(solarSystem[0]);
+			solarSystem[i].hitboxUpdate();
+		}
+		for(solarObject ob : solarSystem)
+		{
+			land.orbit(ob);
+		}
 
-		for(int i =0;i<solarSystem.length-1;i++) {
-			solarSystem[2].gravVel((solarSystem[2].Gravity(solarSystem[i])),solarSystem[i]);
-			solarSystem[i].gravVel((solarSystem[i].Gravity(solarSystem[2])),solarSystem[2]);
-		}
-		land.hitboxUpdate();
-		for(solarObject ob:solarSystem) {
-			ob.gravVel((ob.Gravity(land)), land); // Gravity Between Planets and Lander
-			ob.orbit();
-			ob.hitboxUpdate();
-		}
 		extendCam.position.set(land.pos.x, land.pos.y, 0);
 		ui.camZoom(extendCam);
 		extendCam.update();
@@ -196,9 +199,9 @@ public class SolarLander extends ApplicationAdapter {
 		for(solarObject ob: solarSystem) {
 			solarRender.hitBoxRender(ob.hitBox);	//planet hitboxes
 			solarRender.orbitRender(land,ob); //orbit path
+			solarRender.gravVectLine(ob,solarSystem[0]);
+			solarRender.velVectLine(ob);
 		}
-		solarRender.gravVectLine(solarSystem[0],solarSystem[1]);
-		solarRender.velVectLine(solarSystem[0]);
 		solarRender.hitBoxRender(land.hitBox);
 		rend.end();
 		//batch rendering(lander)

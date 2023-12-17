@@ -25,8 +25,7 @@ public class userInterface {
     }
     public void camZoom(OrthographicCamera cam)
     {
-        if(Gdx.input.isKeyPressed(Input.Keys.Z))
-        {
+        if(Gdx.input.isKeyPressed(Input.Keys.Z)) {
             cam.zoom = 10f;
         }
         else{

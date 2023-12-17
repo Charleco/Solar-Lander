@@ -4,24 +4,23 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 
 public abstract class solarObject {
     public Vector2 pos;
     public Vector2 vel;
-    public final double mass;
+    public final float mass;
     public Circle hitBox;
-    public final double G = 6.674e-11;
+    public final float G = 10F;
     public float radius;
     public Color color;
-    public solarObject(double mass,float x, float y)
+    public solarObject(float mass,float x, float y)
     {
-        pos = new Vector2(0f,0f);
-        this.vel = new Vector2(0f,0f);
         this.mass = mass;
-        this.color = new Color();
-        this.radius = 0f;
+        vel = new Vector2(0f,0f);
+        pos = new Vector2(0f,0f);
+        color = new Color();
+        radius = 0f;
     }
     public float getDistance(solarObject ob1,solarObject ob2)
     {
@@ -29,24 +28,27 @@ public abstract class solarObject {
     }
     public Vector2 Gravity(solarObject ob2)
     {
-        Vector2 gravForce = new Vector2(0f,0f);
-        double distance = getDistance(ob2,this);
-        double grav = (G*ob2.mass*this.mass)/Math.pow(distance,2);
-        float xDir = this.pos.x-ob2.pos.x;
-        float yDir = this.pos.y-ob2.pos.y;
-        float mag = (float) Math.sqrt(Math.pow(xDir,2)+Math.pow(yDir,2));
-        gravForce.x= (float) (((xDir/mag)*grav)/ob2.mass);
-        gravForce.y = (float) (((yDir/mag)*grav)/ob2.mass);
-
-        return gravForce;
+        Vector2 distVect = new Vector2(ob2.pos.x - this.pos.x,ob2.pos.y - this.pos.y);
+        float distMag = distVect.len();
+        float gravForce = ((G * this.mass * ob2.mass)/ (distMag*distMag));
+        float angle = (float) Math.atan2(distVect.y, distVect.x);
+        Vector2 grav = new Vector2((float) (Math.cos(angle)*gravForce*Gdx.graphics.getDeltaTime()), (float) (Math.sin(angle)*gravForce*Gdx.graphics.getDeltaTime()));
+        return grav;
     }
-    public void gravVel(Vector2 gravForce, solarObject ob1)
+    public void orbit(solarObject ob2)
     {
-        ob1.vel.add(gravForce);
+        this.vel.add(Gravity(ob2));
+        this.pos.x += this.vel.x * Gdx.graphics.getDeltaTime();
+        this.pos.y += this.vel.y * Gdx.graphics.getDeltaTime();
     }
-    public void orbit()
+    public void setStartVel(solarObject ob2)
     {
-        pos.add(vel);
+        Vector2 distVect = new Vector2(this.pos.x-ob2.pos.x,this.pos.y-ob2.pos.y);
+        float velocity = (float) Math.sqrt((G*ob2.mass*this.mass)/distVect.len());
+        float angle = (float) Math.atan2(ob2.pos.y - this.pos.y, ob2.pos.x - this.pos.x);
+        float velx = (float) (velocity*(Math.cos(angle+1.57)));
+        float vely = (float) (velocity*(Math.sin(angle+1.57)));
+        this.vel.add(velx,vely);
     }
     public void hitboxUpdate()
     {
@@ -55,7 +57,6 @@ public abstract class solarObject {
     }
     public void crashTest(solarObject ob2)
     {
-
         if(Intersector.overlaps(this.hitBox,ob2.hitBox))
         {
             if(this.mass<ob2.mass)

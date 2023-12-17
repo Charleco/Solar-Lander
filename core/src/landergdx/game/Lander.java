@@ -10,7 +10,7 @@ public class Lander  extends solarObject{
     int Sx;
     int Sy;
 
-    public Lander(double mass,int x, int y)
+    public Lander(float mass,int x, int y)
     {
         super(mass,x,y);
         accel = 1f;
