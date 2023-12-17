@@ -54,4 +54,15 @@ public class solarRender {
         rend.setColor(0,0,1,1f);
         rend.line(ob1.pos.x,ob1.pos.y,ob1.pos.x+ob1.vel.x*10,ob1.pos.y+ob1.vel.y*10);
     }
+    public void gravLanderVectLine(Lander land, solarObject ob2)
+    {
+        rend.setColor(1,0,0,1f);
+        Vector2 test = new Vector2(land.Gravity(ob2));
+        rend.rectLine(land.pos.x+16,land.pos.y+16,(land.pos.x+16)+test.x*15000,(land.pos.y+16)+test.y*15000,2f);
+    }
+    public void velLanderVectLine(Lander land)
+    {
+        rend.setColor(0,0,1,1f);
+        rend.line(land.pos.x+16,land.pos.y+16,(land.pos.x+16)+land.vel.x*10,(land.pos.y+16)+land.vel.y*10);
+    }
 }

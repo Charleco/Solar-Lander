@@ -2,6 +2,7 @@ package landergdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -185,6 +186,14 @@ public class SolarLander extends ApplicationAdapter {
 		ui.camZoom(extendCam);
 		extendCam.update();
 		extendView.apply();
+
+		//batch rendering(lander)
+		batch.setProjectionMatrix(extendView.getCamera().combined);
+		batch.begin();
+		TextureRegion currentFrame = (land.thrusters(idling.getAnim(), thrusters.getAnim())).getKeyFrame(stateTime, true);
+		batch.draw(currentFrame, land.pos.x, land.pos.y);
+		batch.end();
+
 		// shape rendering(planets)
 		rend.setProjectionMatrix(extendView.getCamera().combined);
 		rend.setAutoShapeType(false);
@@ -202,14 +211,13 @@ public class SolarLander extends ApplicationAdapter {
 			solarRender.gravVectLine(ob,solarSystem[0]);
 			solarRender.velVectLine(ob);
 		}
+		if(Gdx.input.isKeyPressed(Input.Keys.V))
+		{
+			solarRender.velLanderVectLine(land);
+			solarRender.gravLanderVectLine(land,solarSystem[0]);
+		}
 		solarRender.hitBoxRender(land.hitBox);
 		rend.end();
-		//batch rendering(lander)
-		batch.setProjectionMatrix(extendView.getCamera().combined);
-		batch.begin();
-		TextureRegion currentFrame = (land.thrusters(idling.getAnim(), thrusters.getAnim())).getKeyFrame(stateTime, true);
-		batch.draw(currentFrame, land.pos.x, land.pos.y);
-		batch.end();
 	}
 	public void uiRender()
 	{

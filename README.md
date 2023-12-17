@@ -5,6 +5,7 @@ a small [libGDX](https://libgdx.com/) orbit-sim project with a controllable land
 ![](assets/preview2.png)
 
 ### Keybinds
-```WASD```: Cardinal Direction Movement \
-```Space (HOLD)```: Show Hitboxes \
-```Z (HOLD)```: Zoom Out
+```WASD``` : Cardinal Direction Movement \
+```V (HOLD)``` : Show Forces Vectors of Lander \
+```Space (HOLD)``` : Show Hitboxes \
+```Z (HOLD)``` : Zoom Out
