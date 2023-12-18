@@ -87,5 +87,14 @@ public abstract class solarObject {
             }
         }
     }
+    public Vector2 getNetGrav(solarObject[] system)
+    {
+        Vector2 netGrav = new Vector2();
+        for(solarObject ob2: system)
+        {
+            netGrav.add(this.Gravity(ob2));
+        }
+        return netGrav;
+    }
 
 }

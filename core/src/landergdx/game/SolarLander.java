@@ -218,6 +218,11 @@ public class SolarLander extends ApplicationAdapter {
 		solarRender.orbitRender(land,solarSystem);
 		solarRender.vectLine(solarSystem,solarSystem[0]);
 		solarRender.landerVectLine(land,solarSystem[0]);
+
+		rend.end();
+		rend.setProjectionMatrix(screenView.getCamera().combined);
+
+		solarRender.drawLandUi(land, solarSystem,screenView);
 		rend.end();
 	}
 	public void uiRender()

@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.viewport.Viewport;
+
 import java.util.HashMap;
 import static com.badlogic.gdx.Input.Keys.SPACE;
 
@@ -121,5 +123,30 @@ public class solarRender {
             rend.setColor(dots.get(pos));
             rend.circle(pos.x*.25f,pos.y*.25f,10);
         }
+    }
+    public void drawLandUi(Lander land, solarObject[] system, Viewport view)
+    {
+        float scale = .5f*((float) view.getScreenWidth() /view.getScreenHeight());
+        int gravBoxX = view.getScreenWidth()/2;
+        int gravBoxY = view.getScreenHeight()-(view.getScreenHeight()-50);
+
+        Vector2 netGrav = new Vector2(land.getNetGrav(system));
+        netGrav.x *= 10000;
+        netGrav.y *= 10000;
+        netGrav.clamp(0,50);
+        rend.begin(ShapeRenderer.ShapeType.Filled);
+        rend.setColor(Color.BLACK);
+        rend.rect(gravBoxX,gravBoxY,100,100);
+        rend.rect(gravBoxX-101,gravBoxY,100,100);
+        rend.end();
+        rend.begin(ShapeRenderer.ShapeType.Line);
+        rend.setColor(Color.WHITE);
+        rend.rect(gravBoxX,gravBoxY,100,100);
+        rend.rect(gravBoxX-101,gravBoxY,100,100);
+        rend.setColor(1,0,0,1);
+        rend.rectLine(gravBoxX+50, gravBoxY+50, (gravBoxX+50) + netGrav.x, (gravBoxY+50) + netGrav.y, 2f);
+        rend.setColor(0,0,1,1f);
+        rend.rectLine(gravBoxX-51, gravBoxY+50, (gravBoxX-51) + land.vel.x*5, (gravBoxY+50) + land.vel.y*5, 2f);
+
     }
 }
