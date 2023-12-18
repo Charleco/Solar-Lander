@@ -126,7 +126,6 @@ public class solarRender {
     }
     public void drawLandUi(Lander land, solarObject[] system, Viewport view)
     {
-        float scale = .5f*((float) view.getScreenWidth() /view.getScreenHeight());
         int gravBoxX = view.getScreenWidth()/2;
         int gravBoxY = view.getScreenHeight()-(view.getScreenHeight()-50);
 
@@ -146,7 +145,11 @@ public class solarRender {
         rend.setColor(1,0,0,1);
         rend.rectLine(gravBoxX+50, gravBoxY+50, (gravBoxX+50) + netGrav.x, (gravBoxY+50) + netGrav.y, 2f);
         rend.setColor(0,0,1,1f);
-        rend.rectLine(gravBoxX-51, gravBoxY+50, (gravBoxX-51) + land.vel.x*5, (gravBoxY+50) + land.vel.y*5, 2f);
+        Vector2 landvel = new Vector2(land.vel);
+        landvel.x *= 5;
+        landvel.y *= 5;
+        landvel.clamp(0,50);
+        rend.rectLine(gravBoxX-51, gravBoxY+50, (gravBoxX-51) + landvel.x, (gravBoxY+50) + landvel.y, 2f);
 
     }
 }
