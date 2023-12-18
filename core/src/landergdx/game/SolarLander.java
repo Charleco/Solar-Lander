@@ -133,16 +133,17 @@ public class SolarLander extends ApplicationAdapter {
 		solarRender = new solarRender(rend);
 
 		solarSystem = new solarObject[7];
+		for(int i = 0;i<solarSystem.length;i++)
+		{
+			solarSystem[i]= this.planetGen();
+		}
 		solarSystem[0] = new Planet(15000f,10000,10000,800,Color.YELLOW);
 		for(int i =1;i<solarSystem.length;i++)
 		{
 			solarSystem[i] = this.planetGen();
-			for(int j=0;j<i-1;j++)
+			while (!solarSystem[i].orbitCheck(solarSystem))
 			{
-				while (!solarSystem[i].orbitCheck(solarSystem[j]))
-				{
-					solarSystem[i] = this.planetGen();
-				}
+				solarSystem[i] = this.planetGen();
 			}
 		}
 		for(int i =1;i<solarSystem.length;i++) {
@@ -152,7 +153,7 @@ public class SolarLander extends ApplicationAdapter {
 	public solarObject planetGen()
 	{
 		Random rand = new Random();
-		float plX = rand.nextFloat(20000);
+		float plX = 10000f;
 		float plY = rand.nextFloat(20000);
 		float plRad = rand.nextFloat() *(700f-300f)+300f;
 		float plMass = (float) (((4/3)*3.14)*plRad);

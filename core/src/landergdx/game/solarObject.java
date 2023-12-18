@@ -50,11 +50,17 @@ public abstract class solarObject {
         float vely = (float) (velocity*(Math.sin(angle+1.57)));
         this.vel.add(velx,vely);
     }
-    public boolean orbitCheck(solarObject pl2)
+    public boolean orbitCheck(solarObject[] system)
     {
-        float dist = Vector2.dst(this.pos.x,this.pos.y,pl2.pos.x,pl2.pos.y);
-        System.out.println(dist);
-        return dist > 1;
+        for(solarObject ob2: system)
+        {
+            float dist = Vector2.dst(this.pos.x, this.pos.y, ob2.pos.x, ob2.pos.y);
+            if(dist < (this.radius + ob2.radius)&&(this.hashCode()!=ob2.hashCode()))
+            {
+                return false;
+            }
+        }
+        return true;
     }
     public void hitboxUpdate()
     {

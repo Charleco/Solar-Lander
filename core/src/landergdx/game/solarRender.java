@@ -68,7 +68,7 @@ public class solarRender {
             //Gravity
             rend.setColor(1, 0, 0, 1f);
             Vector2 test = new Vector2(ob1.Gravity(ob2));
-            rend.rectLine(ob1.pos.x, ob1.pos.y, ob1.pos.x + test.x * 15000, ob1.pos.y + test.y * 15000, 2f);
+            rend.rectLine(ob1.pos.x, ob1.pos.y, ob1.pos.x + test.x * 2000, ob1.pos.y + test.y * 2000, 2f);
             //Velocity
             rend.setColor(0, 0, 1, 1f);
             rend.line(ob1.pos.x, ob1.pos.y, ob1.pos.x + ob1.vel.x * 10, ob1.pos.y + ob1.vel.y * 10);
@@ -79,7 +79,7 @@ public class solarRender {
         //Gravity
         rend.setColor(1,0,0,1f);
         Vector2 test = new Vector2(ob1.Gravity(ob2));
-        rend.rectLine(ob1.pos.x*scale,ob1.pos.y*scale,(ob1.pos.x+test.x*15000)*scale,(ob1.pos.y+test.y*15000)*scale,2f);
+        rend.rectLine(ob1.pos.x*scale,ob1.pos.y*scale,(ob1.pos.x+test.x*2000)*scale,(ob1.pos.y+test.y*2000)*scale,2f);
         //Velocity
         rend.setColor(0,0,1,1f);
         rend.line(ob1.pos.x*scale,ob1.pos.y*scale,(ob1.pos.x+ob1.vel.x*10)*scale,(ob1.pos.y+ob1.vel.y*10)*scale);
@@ -91,7 +91,7 @@ public class solarRender {
             //Gravity
             rend.setColor(1, 0, 0, 1f);
             Vector2 test = new Vector2(land.Gravity(ob2));
-            rend.rectLine(land.pos.x + 16, land.pos.y + 16, (land.pos.x + 16) + test.x * 15000, (land.pos.y + 16) + test.y * 15000, 2f);
+            rend.rectLine(land.pos.x + 16, land.pos.y + 16, (land.pos.x + 16) + test.x * 2000, (land.pos.y + 16) + test.y * 2000, 2f);
             //Velocity
             rend.setColor(0, 0, 1, 1f);
             rend.line(land.pos.x + 16, land.pos.y + 16, (land.pos.x + 16) + land.vel.x * 10, (land.pos.y + 16) + land.vel.y * 10);
