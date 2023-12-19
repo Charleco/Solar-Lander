@@ -1,11 +1,11 @@
 # Solar-Lander
-a small [libGDX](https://libgdx.com/) orbit-sim project with a controllable lander 
+a small java orbit-sim project using the [libGDX](https://libgdx.com/) framework with a controllable lander 
 
 ![](assets/preview.png)
 ![](assets/preview2.png)
-
+![](assets/preview3.gif)
 ### Keybinds
 ```WASD``` : Cardinal Direction Movement \
-```V (HOLD)``` : Show Forces Vectors of Lander \
+```V (HOLD)``` : Show Forces Vectors of Lander(redundant, see bottom boxes) \
 ```Space (HOLD)``` : Show Hitboxes \
 ```Z (HOLD)``` : Zoom Out
