@@ -73,6 +73,7 @@ public abstract class solarObject {
         {
             if(this.mass<ob2.mass)
             {
+                Gdx.app.log("Collision", "Before: "+" Pos: ("+this.pos.x+","+this.pos.y+")"+" Vel: ("+this.vel.x+","+this.vel.y+")");
                 float dist = this.radius + ob2.radius - this.getDistance(this,ob2);
                 this.pos.x -= (ob2.pos.x - this.pos.x) * dist / (2 * this.radius);
                 this.pos.y -= (ob2.pos.y - this.pos.y) * dist / (2 * this.radius);
@@ -80,9 +81,11 @@ public abstract class solarObject {
                     this.vel.x *= -1;
                 else
                     this.vel.y *=-1;
+                Gdx.app.log("Collision", "After: "+" Pos: ("+this.pos.x+","+this.pos.y+")"+" Vel: ("+this.vel.x+","+this.vel.y+")");
             }
             else
             {
+                Gdx.app.log("Collision", "Before: "+" Pos: ("+ob2.pos.x+","+ob2.pos.y+")"+" Vel: ("+ob2.vel.x+","+ob2.vel.y+")");
                 float dist = ob2.radius + this.radius - ob2.getDistance(ob2,this);
                 ob2.pos.x -= (this.pos.x - ob2.pos.x) * dist / (2 * ob2.radius);
                 ob2.pos.y -= (this.pos.y - ob2.pos.y) * dist / (2 * ob2.radius);
@@ -90,6 +93,7 @@ public abstract class solarObject {
                     ob2.vel.x *= -1;
                 else
                     ob2.vel.y *=-1;
+                Gdx.app.log("Collision", "After: "+" Pos: ("+ob2.pos.x+","+ob2.pos.y+")"+" Vel: ("+ob2.vel.x+","+ob2.vel.y+")");
             }
         }
     }

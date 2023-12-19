@@ -106,6 +106,8 @@ public class solarRender {
             for(solarObject ob: system)
             {
                 dots.put(new Vector2(ob.pos),ob.color);
+                if(dots.size()%10==0)
+                    Gdx.app.log("Render", "Dots.Size: "+dots.size());
             }
             delta = 0f;
         }

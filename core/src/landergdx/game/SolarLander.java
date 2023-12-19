@@ -138,14 +138,17 @@ public class SolarLander extends ApplicationAdapter {
 			solarSystem[i]= this.planetGen();
 		}
 		solarSystem[0] = new Planet(15000f,10000,10000,800,Color.YELLOW);
+		int reponeeded=0;
 		for(int i =1;i<solarSystem.length;i++)
 		{
 			solarSystem[i] = this.planetGen();
 			while (!solarSystem[i].orbitCheck(solarSystem))
 			{
 				solarSystem[i] = this.planetGen();
+				reponeeded++;
 			}
 		}
+		Gdx.app.log("Gen", "Repositions Needed: "+reponeeded);
 		for(int i =1;i<solarSystem.length;i++) {
 			solarSystem[i].setStartVel(solarSystem[0]);
 		}
@@ -154,8 +157,8 @@ public class SolarLander extends ApplicationAdapter {
 	{
 		Random rand = new Random();
 		float plX = 10000f;
-		float plY = rand.nextFloat(20000);
-		float plRad = rand.nextFloat() *(700f-300f)+300f;
+		float plY = rand.nextFloat(10000);
+		float plRad = rand.nextFloat() *(700f-200f)+200f;
 		float plMass = (float) (((4/3)*3.14)*plRad);
 
 		float red = rand.nextFloat();
