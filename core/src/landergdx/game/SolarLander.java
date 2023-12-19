@@ -2,7 +2,6 @@ package landergdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -22,6 +21,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class SolarLander extends ApplicationAdapter {
+	float delta;
 	//sprites
 	SpriteBatch batch;
 	Texture landerImg;
@@ -49,6 +49,7 @@ public class SolarLander extends ApplicationAdapter {
 	@Override
 	public void create () {
 		stateTime = 0f;
+		delta = 0f;
 		this.setUpObjects(); //Lander/Sprites
 		this.generateSystem(); //Planets
 		this.createUi();
@@ -58,14 +59,13 @@ public class SolarLander extends ApplicationAdapter {
 		extendView.update(width, height,true);
 		screenView.update(width, height, true);
 		miniView.setScreenBounds((Gdx.graphics.getWidth()-(Gdx.graphics.getWidth()/4)),((Gdx.graphics.getHeight()/96)), Gdx.graphics.getWidth()/4,Gdx.graphics.getWidth()/4);
-		land.Sx = width;
-		land.Sy = height;
 	}
 	@Override
 	public void render () {
 		ScreenUtils.clear(0, 0, 0, 1);
 		stateTime += Gdx.graphics.getDeltaTime();
-		this.extendRender();
+		delta = Gdx.graphics.getDeltaTime();
+		this.extendRender(delta);
 		this.uiRender();
 		this.miniRender();
 	}
@@ -181,7 +181,7 @@ public class SolarLander extends ApplicationAdapter {
 	///////////////////////////////////////////////////
 	////////////// Render Functions////////////////////
 	///////////////////////////////////////////////////
-	public void extendRender()
+	public void extendRender(float delta)
 	{
 		land.fly();
 		land.hitboxUpdate();
@@ -189,12 +189,12 @@ public class SolarLander extends ApplicationAdapter {
 			land.crashTest(ob);
 		for(int i = 1;i<solarSystem.length;i++)
 		{
-			solarSystem[i].orbit(solarSystem[0]);
+			solarSystem[i].orbit(solarSystem[0],delta);
 			solarSystem[i].hitboxUpdate();
 		}
 		for(solarObject ob : solarSystem)
 		{
-			land.orbit(ob);
+			land.orbit(ob,delta);
 		}
 
 		extendCam.position.set(land.pos.x, land.pos.y, 0);
@@ -219,22 +219,20 @@ public class SolarLander extends ApplicationAdapter {
 
 		rend.begin(ShapeRenderer.ShapeType.Line);
 		solarRender.hitBoxRender(solarSystem,land);
-		solarRender.orbitRender(land,solarSystem);
-		solarRender.vectLine(solarSystem,solarSystem[0]);
-		solarRender.landerVectLine(land,solarSystem[0]);
-
+		solarRender.orbitRender(land,solarSystem,delta);
+		solarRender.vectLine(solarSystem,solarSystem[0],delta);
+		solarRender.landerVectLine(land,solarSystem[0],delta);
 		rend.end();
 		rend.setProjectionMatrix(screenView.getCamera().combined);
-
-		solarRender.drawLandUi(land, solarSystem,screenView);
+		rend.begin(ShapeRenderer.ShapeType.Filled);
+		solarRender.drawLandUi(land, solarSystem,screenView,delta);
 		rend.end();
 	}
 	public void uiRender()
 	{
 		screenView.apply();
-		for(int i =0; i<solarSystem.length;i++)
-			ui.obLabelUpdate(solarLabels.get(i),solarSystem[i],i); //Planet Stats
-		ui.debugUpdate(debugLabel); //Memory,Window,Etc
+		ui.obLabelUpdate(solarLabels,solarSystem); //Planet Stats
+		ui.debugUpdate(debugLabel,stateTime); //Memory,Window,Etc
 		ui.velLabelUpdate(velocityLabel,land); // Lander Stats
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.draw();
@@ -258,15 +256,12 @@ public class SolarLander extends ApplicationAdapter {
 
 		//minimap icons
 		rend.begin(ShapeRenderer.ShapeType.Filled);
-		for(solarObject ob: solarSystem)
-			solarRender.miniRend(ob);
+		solarRender.miniRend(solarSystem);
 		solarRender.landerMiniRend(land);
 		solarRender.miniDots();
 		rend.end();
 		rend.begin(ShapeRenderer.ShapeType.Line);
-		for(solarObject ob: solarSystem) {
-			solarRender.miniVectLine(ob,solarSystem[0]);
-		}
+		solarRender.miniVectLine(solarSystem,solarSystem[0],delta);
 		rend.end();
 	}
 

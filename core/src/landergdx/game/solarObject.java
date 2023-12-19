@@ -14,47 +14,47 @@ public abstract class solarObject {
     public final float G = 10F;
     public float radius;
     public Color color;
-    public solarObject(float mass,float x, float y)
+    public solarObject(float mass)
     {
         this.mass = mass;
         vel = new Vector2(0f,0f);
         pos = new Vector2(0f,0f);
-        color = Color.WHITE;
-        radius = 0f;
     }
-    public float getDistance(solarObject ob1,solarObject ob2)
+    public float getDistance(solarObject ob2)
     {
-        return (float) Math.sqrt(Math.abs(Math.pow(ob1.pos.x - ob2.pos.x,2) + Math.pow(ob1.pos.y - ob2.pos.y,2)));
+        return new Vector2(ob2.pos.x - this.pos.x,ob2.pos.y - this.pos.y).len();
     }
-    public Vector2 Gravity(solarObject ob2)
+    public Vector2 gravity(solarObject ob2, float delta)
     {
         Vector2 distVect = new Vector2(ob2.pos.x - this.pos.x,ob2.pos.y - this.pos.y);
         float distMag = distVect.len();
+        if(distMag==0)
+            return new Vector2(0,0);
         float gravForce = ((G * this.mass * ob2.mass)/ (distMag*distMag));
         float angle = (float) Math.atan2(distVect.y, distVect.x);
-        Vector2 grav = new Vector2((float) (Math.cos(angle)*gravForce*Gdx.graphics.getDeltaTime()), (float) (Math.sin(angle)*gravForce*Gdx.graphics.getDeltaTime()));
-        return grav;
+        return new Vector2((float) (Math.cos(angle)*gravForce*delta), (float) (Math.sin(angle)*gravForce*delta));
     }
-    public void orbit(solarObject ob2)
+    public void orbit(solarObject ob2, float delta)
     {
-        this.vel.add(Gravity(ob2));
-        this.pos.x += this.vel.x * Gdx.graphics.getDeltaTime();
-        this.pos.y += this.vel.y * Gdx.graphics.getDeltaTime();
+        this.vel.add(gravity(ob2,delta));
+        this.pos.x += this.vel.x * delta;
+        this.pos.y += this.vel.y * delta;
     }
     public void setStartVel(solarObject ob2)
     {
+        double circleOrbit= 1.57;
         Vector2 distVect = new Vector2(this.pos.x-ob2.pos.x,this.pos.y-ob2.pos.y);
         float velocity = (float) Math.sqrt((G*ob2.mass*this.mass)/distVect.len());
         float angle = (float) Math.atan2(ob2.pos.y - this.pos.y, ob2.pos.x - this.pos.x);
-        float velx = (float) (velocity*(Math.cos(angle+1.57)));
-        float vely = (float) (velocity*(Math.sin(angle+1.57)));
+        float velx = (float) (velocity*(Math.cos(angle+circleOrbit)));
+        float vely = (float) (velocity*(Math.sin(angle+circleOrbit)));
         this.vel.add(velx,vely);
     }
     public boolean orbitCheck(solarObject[] system)
     {
         for(solarObject ob2: system)
         {
-            float dist = Vector2.dst(this.pos.x, this.pos.y, ob2.pos.x, ob2.pos.y);
+            float dist = this.getDistance(ob2);
             if(dist < (this.radius + ob2.radius)&&(this.hashCode()!=ob2.hashCode()))
             {
                 return false;
@@ -74,7 +74,7 @@ public abstract class solarObject {
             if(this.mass<ob2.mass)
             {
                 Gdx.app.log("Collision", "Before: "+" Pos: ("+this.pos.x+","+this.pos.y+")"+" Vel: ("+this.vel.x+","+this.vel.y+")");
-                float dist = this.radius + ob2.radius - this.getDistance(this,ob2);
+                float dist = this.radius + ob2.radius - this.getDistance(ob2);
                 this.pos.x -= (ob2.pos.x - this.pos.x) * dist / (2 * this.radius);
                 this.pos.y -= (ob2.pos.y - this.pos.y) * dist / (2 * this.radius);
                 if(Math.abs(this.vel.x)>Math.abs(this.vel.y))
@@ -86,7 +86,7 @@ public abstract class solarObject {
             else
             {
                 Gdx.app.log("Collision", "Before: "+" Pos: ("+ob2.pos.x+","+ob2.pos.y+")"+" Vel: ("+ob2.vel.x+","+ob2.vel.y+")");
-                float dist = ob2.radius + this.radius - ob2.getDistance(ob2,this);
+                float dist = ob2.radius + this.radius - ob2.getDistance(this);
                 ob2.pos.x -= (this.pos.x - ob2.pos.x) * dist / (2 * ob2.radius);
                 ob2.pos.y -= (this.pos.y - ob2.pos.y) * dist / (2 * ob2.radius);
                 if(Math.abs(ob2.vel.x)>Math.abs(ob2.vel.y))
@@ -97,12 +97,12 @@ public abstract class solarObject {
             }
         }
     }
-    public Vector2 getNetGrav(solarObject[] system)
+    public Vector2 getNetGrav(solarObject[] system,float delta)
     {
         Vector2 netGrav = new Vector2();
         for(solarObject ob2: system)
         {
-            netGrav.add(this.Gravity(ob2));
+            netGrav.add(this.gravity(ob2,delta));
         }
         return netGrav;
     }
