@@ -2,7 +2,7 @@
 a small java orbit-sim project using the [libGDX](https://libgdx.com/) framework with a controllable lander 
 
 ![](assets/preview.png)
-![](assets/preview2.png)
+![](assets/preview2(new).png)
 ![](assets/preview3.gif)
 ### Keybinds
 ```WASD``` : Cardinal Direction Movement \
