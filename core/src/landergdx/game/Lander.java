@@ -14,23 +14,23 @@ public class Lander  extends solarObject{
         radius = 16;
         hitBox = new Circle(pos.x+16,pos.y+16,16);
     }
-    public void fly()
+    public void fly(float delta)
     {
         if(Gdx.input.isKeyPressed(Keys.A))
         {
-            vel.x-= 1*Gdx.graphics.getDeltaTime();
+            vel.x-= 1*delta;
         }
         if(Gdx.input.isKeyPressed(Keys.D))
         {
-            vel.x+= 1*Gdx.graphics.getDeltaTime();
+            vel.x+= 1*delta;
         }
         if(Gdx.input.isKeyPressed(Keys.W))
         {
-            vel.y += 1*Gdx.graphics.getDeltaTime();
+            vel.y += 1*delta;
         }
         if(Gdx.input.isKeyPressed(Keys.S))
         {
-            vel.y -= 1*Gdx.graphics.getDeltaTime();
+            vel.y -= 1*delta;
         }
         pos.add(vel);
     }

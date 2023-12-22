@@ -26,17 +26,21 @@ public abstract class solarObject {
     }
     public Vector2 gravity(solarObject ob2, float delta)
     {
-        Vector2 distVect = new Vector2(ob2.pos.x - this.pos.x,ob2.pos.y - this.pos.y);
-        float distMag = distVect.len();
-        if(distMag==0)
-            return new Vector2(0,0);
-        float gravForce = ((G * this.mass * ob2.mass)/ (distMag*distMag));
-        float angle = (float) Math.atan2(distVect.y, distVect.x);
-        return new Vector2((float) (Math.cos(angle)*gravForce*delta), (float) (Math.sin(angle)*gravForce*delta));
+            Vector2 distVect = new Vector2(ob2.pos.x - this.pos.x, ob2.pos.y - this.pos.y);
+            float distMag = distVect.len();
+            float gravForce = ((G * this.mass * ob2.mass) / (distMag * distMag));
+            float angle = (float) Math.atan2(distVect.y, distVect.x);
+            return new Vector2((float) (Math.cos(angle) * gravForce * delta), (float) (Math.sin(angle) * gravForce * delta));
     }
     public void orbit(solarObject ob2, float delta)
     {
         this.vel.add(gravity(ob2,delta));
+        this.pos.x += this.vel.x * delta;
+        this.pos.y += this.vel.y * delta;
+    }
+    public void orbit2(solarObject[] system, float delta)
+    {
+        this.vel.add(getNetGrav(system,delta));
         this.pos.x += this.vel.x * delta;
         this.pos.y += this.vel.y * delta;
     }
@@ -67,33 +71,31 @@ public abstract class solarObject {
         hitBox.x = pos.x;
         hitBox.y = pos.y;
     }
-    public void crashTest(solarObject ob2)
+    public void crashTest(solarObject[] system)
     {
-        if(Intersector.overlaps(this.hitBox,ob2.hitBox))
-        {
-            if(this.mass<ob2.mass)
-            {
-                Gdx.app.log("Collision", "Before: "+" Pos: ("+this.pos.x+","+this.pos.y+")"+" Vel: ("+this.vel.x+","+this.vel.y+")");
-                float dist = this.radius + ob2.radius - this.getDistance(ob2);
-                this.pos.x -= (ob2.pos.x - this.pos.x) * dist / (2 * this.radius);
-                this.pos.y -= (ob2.pos.y - this.pos.y) * dist / (2 * this.radius);
-                if(Math.abs(this.vel.x)>Math.abs(this.vel.y))
-                    this.vel.x *= -1;
-                else
-                    this.vel.y *=-1;
-                Gdx.app.log("Collision", "After: "+" Pos: ("+this.pos.x+","+this.pos.y+")"+" Vel: ("+this.vel.x+","+this.vel.y+")");
-            }
-            else
-            {
-                Gdx.app.log("Collision", "Before: "+" Pos: ("+ob2.pos.x+","+ob2.pos.y+")"+" Vel: ("+ob2.vel.x+","+ob2.vel.y+")");
-                float dist = ob2.radius + this.radius - ob2.getDistance(this);
-                ob2.pos.x -= (this.pos.x - ob2.pos.x) * dist / (2 * ob2.radius);
-                ob2.pos.y -= (this.pos.y - ob2.pos.y) * dist / (2 * ob2.radius);
-                if(Math.abs(ob2.vel.x)>Math.abs(ob2.vel.y))
-                    ob2.vel.x *= -1;
-                else
-                    ob2.vel.y *=-1;
-                Gdx.app.log("Collision", "After: "+" Pos: ("+ob2.pos.x+","+ob2.pos.y+")"+" Vel: ("+ob2.vel.x+","+ob2.vel.y+")");
+        for(solarObject ob2: system) {
+            if (Intersector.overlaps(this.hitBox, ob2.hitBox)&&this.hashCode()!=ob2.hashCode()) {
+                if (this.mass < ob2.mass) {
+                    Gdx.app.log("Collision", "Before: " + " Pos: (" + this.pos.x + "," + this.pos.y + ")" + " Vel: (" + this.vel.x + "," + this.vel.y + ")");
+                    float dist = this.radius + ob2.radius - this.getDistance(ob2);
+                    this.pos.x -= (ob2.pos.x - this.pos.x) * dist / (2 * this.radius);
+                    this.pos.y -= (ob2.pos.y - this.pos.y) * dist / (2 * this.radius);
+                    if (Math.abs(this.vel.x) > Math.abs(this.vel.y))
+                        this.vel.x *= -1;
+                    else
+                        this.vel.y *= -1;
+                    Gdx.app.log("Collision", "After: " + " Pos: (" + this.pos.x + "," + this.pos.y + ")" + " Vel: (" + this.vel.x + "," + this.vel.y + ")");
+                } else {
+                    Gdx.app.log("Collision", "Before: " + " Pos: (" + ob2.pos.x + "," + ob2.pos.y + ")" + " Vel: (" + ob2.vel.x + "," + ob2.vel.y + ")");
+                    float dist = ob2.radius + this.radius - ob2.getDistance(this);
+                    ob2.pos.x -= (this.pos.x - ob2.pos.x) * dist / (2 * ob2.radius);
+                    ob2.pos.y -= (this.pos.y - ob2.pos.y) * dist / (2 * ob2.radius);
+                    if (Math.abs(ob2.vel.x) > Math.abs(ob2.vel.y))
+                        ob2.vel.x *= -1;
+                    else
+                        ob2.vel.y *= -1;
+                    Gdx.app.log("Collision", "After: " + " Pos: (" + ob2.pos.x + "," + ob2.pos.y + ")" + " Vel: (" + ob2.vel.x + "," + ob2.vel.y + ")");
+                }
             }
         }
     }
@@ -102,7 +104,10 @@ public abstract class solarObject {
         Vector2 netGrav = new Vector2();
         for(solarObject ob2: system)
         {
-            netGrav.add(this.gravity(ob2,delta));
+            if(this.hashCode()!=ob2.hashCode())
+            {
+                netGrav.add(this.gravity(ob2,delta));
+            }
         }
         return netGrav;
     }

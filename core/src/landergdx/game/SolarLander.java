@@ -2,6 +2,7 @@ package landergdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -22,6 +23,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class SolarLander extends ApplicationAdapter {
 	float delta;
+	double speed;
 	//sprites
 	SpriteBatch batch;
 	Texture landerImg;
@@ -132,14 +134,14 @@ public class SolarLander extends ApplicationAdapter {
 		rend = new ShapeRenderer();
 		solarRender = new solarRender(rend);
 
-		solarSystem = new solarObject[7];
+		solarSystem = new solarObject[2];
 		for(int i = 0;i<solarSystem.length;i++)
 		{
 			solarSystem[i]= this.planetGen();
 		}
-		solarSystem[0] = new Planet(15000f,10000,10000,800,Color.YELLOW);
+		//solarSystem[0] = new Planet(15000f,10000,10000,800,Color.YELLOW);
 		int reponeeded=0;
-		for(int i =1;i<solarSystem.length;i++)
+		for(int i =0;i<solarSystem.length;i++)
 		{
 			solarSystem[i] = this.planetGen();
 			while (!solarSystem[i].orbitCheck(solarSystem))
@@ -183,18 +185,23 @@ public class SolarLander extends ApplicationAdapter {
 	///////////////////////////////////////////////////
 	public void extendRender(float delta)
 	{
-		land.fly();
-		land.hitboxUpdate();
-		for(solarObject ob:solarSystem)
-			land.crashTest(ob);
-		for(int i = 1;i<solarSystem.length;i++)
+		if(Gdx.input.isKeyPressed(Input.Keys.Q))
 		{
-			solarSystem[i].orbit(solarSystem[0],delta);
-			solarSystem[i].hitboxUpdate();
+			delta*=100;
 		}
-		for(solarObject ob : solarSystem)
+		if(Gdx.input.isKeyPressed(Input.Keys.E))
 		{
-			land.orbit(ob,delta);
+			delta*=1000;
+		}
+		land.fly(delta);
+		land.hitboxUpdate();
+		land.crashTest(solarSystem);
+		land.orbit2(solarSystem,delta);
+		for(solarObject ob: solarSystem)
+		{
+			ob.orbit2(solarSystem,delta);
+			ob.hitboxUpdate();
+			ob.crashTest(solarSystem);
 		}
 
 		extendCam.position.set(land.pos.x, land.pos.y, 0);
