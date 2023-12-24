@@ -7,18 +7,60 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
 
 public abstract class solarObject {
-    public Vector2 pos;
-    public Vector2 vel;
-    public final float mass;
-    public Circle hitBox;
+    private Vector2 pos;
+    private Vector2 vel;
+    private final float mass;
+    private Circle hitBox;
     public final float G = 10F;
-    public float radius;
-    public Color color;
-    public solarObject(float mass)
+    private float radius;
+    private Color color;
+    public solarObject(float mass,float x,float y,Color color, float radius)
     {
         this.mass = mass;
-        vel = new Vector2(0f,0f);
-        pos = new Vector2(0f,0f);
+        this.vel = new Vector2(0f,0f);
+        this.pos = new Vector2(x,y);
+        this.color = color;
+        this.radius = radius;
+        this.hitBox = new Circle(this.pos.x,this.pos.y,this.radius);
+    }
+    public Vector2 getPos()
+    {
+        return this.pos;
+    }
+    public void setPos(Vector2 newPos) {
+        this.pos.set(newPos);
+    }
+    public Vector2 getVel()
+    {
+        return this.vel;
+    }
+    public void setVel(Vector2 newVel) {
+        this.vel.set(newVel);
+    }
+    public float getMass()
+    {
+        return this.mass;
+    }
+    public Circle getHitBox()
+    {
+        return this.hitBox;
+    }
+    public void setHitBox(Circle newBox) {
+        this.hitBox=newBox;
+    }
+    public float getRadius()
+    {
+        return this.radius;
+    }
+    public void setRadius(float newRad) {
+        this.radius = newRad;
+    }
+    public Color getColor()
+    {
+        return this.color;
+    }
+    public void setColor(Color newColor) {
+        this.color = newColor;
     }
     public float getDistance(solarObject ob2)
     {

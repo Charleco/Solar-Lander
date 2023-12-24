@@ -20,12 +20,15 @@ public class solarRender {
         dotTime = 0f;
         this.dots = new HashMap<>();
     }
+    public void lineRend(){
+
+    }
     public void drawPlanets(solarObject[] system)
     {
         for(solarObject ob:system)
         {
-            rend.setColor(ob.color);
-            rend.circle(ob.pos.x, ob.pos.y, ob.radius); //draw the planets
+            rend.setColor(ob.getColor());
+            rend.circle(ob.getPos().x, ob.getPos().y, ob.getRadius()); //draw the planets
         }
     }
     public void hitBoxRender(solarObject[] system, Lander land) {
@@ -33,35 +36,35 @@ public class solarRender {
         {
             rend.setColor(Color.RED);
             for(solarObject ob:system) {
-                rend.circle(ob.hitBox.x, ob.hitBox.y, ob.hitBox.radius);
+                rend.circle(ob.getHitBox().x, ob.getHitBox().y, ob.getHitBox().radius);
             }
-            rend.circle(land.hitBox.x,land.hitBox.y,land.hitBox.radius);
+            rend.circle(land.getHitBox().x, land.getHitBox().y, land.getHitBox().radius);
         }
     }
     public void orbitRender(solarObject ob1, solarObject[] system, float delta) {
         for (solarObject ob2 : system)
         {
             if (ob1.gravity(ob2,delta).len() > 5e-4) {
-                rend.setColor(ob2.color);
-                rend.circle(ob2.pos.x, ob2.pos.y, ob1.getDistance(ob2));
+                rend.setColor(ob2.getColor());
+                rend.circle(ob2.getPos().x, ob2.getPos().y, ob1.getDistance(ob2));
             }
         }
     }
     public void miniRend(solarObject[] system)
     {
         for(solarObject ob: system) {
-            float miniX = ob.pos.x * scale;
-            float miniY = ob.pos.y * scale;
-            float miniRad = ob.radius * scale;
-            rend.setColor(ob.color);
+            float miniX = ob.getPos().x * scale;
+            float miniY = ob.getPos().y * scale;
+            float miniRad = ob.getRadius() * scale;
+            rend.setColor(ob.getColor());
             rend.circle(miniX, miniY, miniRad);
         }
     }
     public void landerMiniRend(Lander land)
     {
         rend.setColor(Color.WHITE);
-        float miniX = land.pos.x * scale;
-        float miniY = land.pos.y * scale;
+        float miniX = land.getPos().x * scale;
+        float miniY = land.getPos().y * scale;
         rend.circle(miniX,miniY,20);
     }
     public void vectLine(solarObject[] system, solarObject ob2,float delta) {
@@ -69,10 +72,10 @@ public class solarRender {
             //Gravity
             rend.setColor(1, 0, 0, 1f);
             Vector2 test = new Vector2(ob1.gravity(ob2,delta));
-            rend.rectLine(ob1.pos.x, ob1.pos.y, ob1.pos.x + test.x * 2000, ob1.pos.y + test.y * 2000, 2f);
+            rend.rectLine(ob1.getPos().x, ob1.getPos().y, ob1.getPos().x + test.x * 2000, ob1.getPos().y + test.y * 2000, 2f);
             //Velocity
             rend.setColor(0, 0, 1, 1f);
-            rend.line(ob1.pos.x, ob1.pos.y, ob1.pos.x + ob1.vel.x * 10, ob1.pos.y + ob1.vel.y * 10);
+            rend.line(ob1.getPos().x, ob1.getPos().y, ob1.getPos().x + ob1.getVel().x * 10, ob1.getPos().y + ob1.getVel().y * 10);
         }
     }
     public void miniVectLine(solarObject[] system, solarObject ob2,float delta)
@@ -81,10 +84,10 @@ public class solarRender {
             //Gravity
             rend.setColor(1, 0, 0, 1f);
             Vector2 test = new Vector2(ob1.gravity(ob2, delta));
-            rend.rectLine(ob1.pos.x * scale, ob1.pos.y * scale, (ob1.pos.x + test.x * 2000) * scale, (ob1.pos.y + test.y * 2000) * scale, 2f);
+            rend.rectLine(ob1.getPos().x * scale, ob1.getPos().y * scale, (ob1.getPos().x + test.x * 2000) * scale, (ob1.getPos().y + test.y * 2000) * scale, 2f);
             //Velocity
             rend.setColor(0, 0, 1, 1f);
-            rend.line(ob1.pos.x * scale, ob1.pos.y * scale, (ob1.pos.x + ob1.vel.x * 10) * scale, (ob1.pos.y + ob1.vel.y * 10) * scale);
+            rend.line(ob1.getPos().x * scale, ob1.getPos().y * scale, (ob1.getPos().x + ob1.getVel().x * 10) * scale, (ob1.getPos().y + ob1.getVel().y * 10) * scale);
         }
     }
     public void landerVectLine(Lander land, solarObject ob2,float delta)
@@ -94,10 +97,10 @@ public class solarRender {
             //Gravity
             rend.setColor(1, 0, 0, 1f);
             Vector2 test = new Vector2(land.gravity(ob2,delta));
-            rend.rectLine(land.pos.x + 16, land.pos.y + 16, (land.pos.x + 16) + test.x * 2000, (land.pos.y + 16) + test.y * 2000, 2f);
+            rend.rectLine(land.getPos().x + 16, land.getPos().y + 16, (land.getPos().x + 16) + test.x * 2000, (land.getPos().y + 16) + test.y * 2000, 2f);
             //Velocity
             rend.setColor(0, 0, 1, 1f);
-            rend.line(land.pos.x + 16, land.pos.y + 16, (land.pos.x + 16) + land.vel.x * 10, (land.pos.y + 16) + land.vel.y * 10);
+            rend.line(land.getPos().x + 16, land.getPos().y + 16, (land.getPos().x + 16) + land.getVel().x * 10, (land.getPos().y + 16) + land.getVel().y * 10);
         }
     }
     public void trailDot(solarObject[] system)
@@ -108,7 +111,7 @@ public class solarRender {
         {
             for(solarObject ob: system)
             {
-                dots.put(new Vector2(ob.pos),ob.color);
+                dots.put(new Vector2(ob.getPos()), ob.getColor());
                 if(dots.size()%10==0)
                     Gdx.app.log("Render", "Dots.Size: "+dots.size());
             }
@@ -148,7 +151,7 @@ public class solarRender {
         rend.setColor(1,0,0,1);
         rend.rectLine(gravBoxX+50, gravBoxY+50, (gravBoxX+50) + netGrav.x, (gravBoxY+50) + netGrav.y, 2f);
         rend.setColor(0,0,1,1f);
-        Vector2 landvel = new Vector2(land.vel);
+        Vector2 landvel = new Vector2(land.getVel());
         landvel.x *= 5;
         landvel.y *= 5;
         landvel.clamp(0,50);

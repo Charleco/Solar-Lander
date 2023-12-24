@@ -1,38 +1,36 @@
 package landergdx.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 
 public class Lander  extends solarObject{
-    public Lander(float mass,int x, int y)
+    public Lander(float mass,float x,float y,Color color, float radius)
     {
-        super(mass);
-        pos.x = x;
-        pos.y = y;
-        radius = 16;
-        hitBox = new Circle(pos.x+16,pos.y+16,16);
+        super(mass,x,y,color,radius);
+        setHitBox(new Circle(getPos().x+16, getPos().y+16,16));
     }
     public void fly(float delta)
     {
         if(Gdx.input.isKeyPressed(Keys.A))
         {
-            vel.x-= 1*delta;
+            getVel().x-= 1*delta;
         }
         if(Gdx.input.isKeyPressed(Keys.D))
         {
-            vel.x+= 1*delta;
+            getVel().x+= 1*delta;
         }
         if(Gdx.input.isKeyPressed(Keys.W))
         {
-            vel.y += 1*delta;
+            getVel().y += 1*delta;
         }
         if(Gdx.input.isKeyPressed(Keys.S))
         {
-            vel.y -= 1*delta;
+            getVel().y -= 1*delta;
         }
-        pos.add(vel);
+        getPos().add(getVel());
     }
     public Animation<TextureRegion> thrusters(Animation<TextureRegion> idle, Animation<TextureRegion> thrust)
     {
@@ -44,12 +42,12 @@ public class Lander  extends solarObject{
     }
     public void hitboxUpdate()
     {
-        hitBox.x = pos.x+16;
-        hitBox.y = pos.y+16;
+        getHitBox().x = getPos().x+16;
+        getHitBox().y = getPos().y+16;
     }
     public float getDistance(solarObject ob2)
     {
-        return (float) Math.sqrt(Math.abs(Math.pow((this.pos.x+16) - ob2.pos.x,2) + Math.pow((this.pos.y+16) - ob2.pos.y,2)));
+        return (float) Math.sqrt(Math.abs(Math.pow((this.getPos().x+16) - ob2.getPos().x,2) + Math.pow((this.getPos().y+16) - ob2.getPos().y,2)));
     }
 
 }

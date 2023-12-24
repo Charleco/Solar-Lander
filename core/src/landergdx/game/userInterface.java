@@ -20,13 +20,13 @@ public class userInterface {
         label.setText("Debug: "+"\n"+"Memory Usage: "+this.getMemUsage()/(1024)+"kB"+"\n"+"Window Size: "+ Gdx.graphics.getHeight()+"x"+Gdx.graphics.getWidth()+"\n" + "DeltaTime(ms): "+Gdx.graphics.getDeltaTime()*1000+"\n"+"Total Time(s): "+Math.round(stateTime));
     }
     public void velLabelUpdate(Label label,Lander land) {
-        label.setText("Lander: "+"\n"+"Velx: "+land.vel.x+"\n"+"Vely: "+land.vel.y+"\n"+"X: "+land.pos.x+"\n"+"Y: "+land.pos.y);
+        label.setText("Lander: "+"\n"+"Velx: "+ land.getVel().x+"\n"+"Vely: "+ land.getVel().y+"\n"+"X: "+ land.getPos().x+"\n"+"Y: "+ land.getPos().y);
     }
     public void obLabelUpdate(ArrayList<Label> labels, solarObject[] system) {
         for(int i =0;i<system.length;i++)
         {
             solarObject ob = system[i];
-            labels.get(i).setText("Planet " + (i + 1) + ":" + "\n" + "Velx: " + ob.vel.x + "\n" + "Vely: " + ob.vel.y + "\n" + "X: " + ob.pos.x + "\n" + "Y: " + ob.pos.y + "\n" + "Mass: " + ob.mass);
+            labels.get(i).setText("Planet " + (i + 1) + ":" + "\n" + "Velx: " + ob.getVel().x + "\n" + "Vely: " + ob.getVel().y + "\n" + "X: " + ob.getPos().x + "\n" + "Y: " + ob.getPos().y + "\n" + "Mass: " + ob.getMass());
         }
     }
     public void camZoom(OrthographicCamera cam)

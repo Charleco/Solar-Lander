@@ -87,7 +87,7 @@ public class SolarLander extends ApplicationAdapter {
 	{
 		extendCam = new OrthographicCamera();
 		extendView = new ExtendViewport(900,900, extendCam); //Batch/World
-		extendCam.position.set(land.pos.x,land.pos.y,0);
+		extendCam.position.set(land.getPos().x, land.getPos().y,0);
 		extendCam.update();
 		screenView = new ScreenViewport(); //UI viewport
 		OrthographicCamera miniCam = new OrthographicCamera();
@@ -178,7 +178,7 @@ public class SolarLander extends ApplicationAdapter {
 		//animations
 		thrusters = new sprAnim(thrusterSheet,1,3,.1f);
 		idling = new sprAnim(landerImg,1,1,.1f);
-		land = new Lander(15,6000,6000);
+		land = new Lander(15,6000,6000,Color.WHITE,16);
 	}
 	///////////////////////////////////////////////////
 	////////////// Render Functions////////////////////
@@ -204,7 +204,7 @@ public class SolarLander extends ApplicationAdapter {
 			ob.crashTest(solarSystem);
 		}
 
-		extendCam.position.set(land.pos.x, land.pos.y, 0);
+		extendCam.position.set(land.getPos().x, land.getPos().y, 0);
 		ui.camZoom(extendCam);
 		extendCam.update();
 		extendView.apply();
@@ -213,7 +213,7 @@ public class SolarLander extends ApplicationAdapter {
 		batch.setProjectionMatrix(extendView.getCamera().combined);
 		batch.begin();
 		TextureRegion currentFrame = (land.thrusters(idling.getAnim(), thrusters.getAnim())).getKeyFrame(stateTime, true);
-		batch.draw(currentFrame, land.pos.x, land.pos.y);
+		batch.draw(currentFrame, land.getPos().x, land.getPos().y);
 		batch.end();
 
 		// shape rendering(planets)
