@@ -1,8 +1,8 @@
 package landergdx.game;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Circle;
-public class Planet extends solarObject {
+
+public class Planet extends SolarObject {
 
     public Planet(float mass, float x, float y, float rad, Color color)
     {

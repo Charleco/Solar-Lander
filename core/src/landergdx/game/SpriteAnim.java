@@ -4,13 +4,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class sprAnim {
+public class SpriteAnim {
     private final Texture sheet;
     private final int rowCount;
     private final int colCount;
     private final float fps;
-    public Animation<TextureRegion> anim;
-    public sprAnim(Texture sheet, int rowCount, int colCount, float fps)
+    private Animation<TextureRegion> anim;
+    public SpriteAnim(Texture sheet, int rowCount, int colCount, float fps)
     {
         this.sheet =sheet;
         this.rowCount=rowCount;
