@@ -5,8 +5,8 @@ import com.badlogic.gdx.graphics.Color;
 import java.util.Random;
 
 public class SolarSystem {
-    private Lander land;
-    private SolarObject[] system;
+    private final Lander land;
+    private final SolarObject[] system;
     public SolarSystem(Lander land, int size)
     {
         this.land = land;
@@ -20,20 +20,24 @@ public class SolarSystem {
     public SolarObject[] getSystem(){
         return this.system;
     }
-    public void update(float delta)
+    public void render(float delta)
     {
-        land.update(delta);
+        land.render(delta);
         land.crashTest(this.system);
         land.orbit2(this.system,delta);
+        for(int i = 1;i<this.system.length;i++)
+        {
+            this.system[i].orbit(system[0],delta);
+        }
         for(SolarObject ob: this.system)
         {
-            ob.orbit2(this.system,delta);
+            //ob.orbit2(this.system,delta);
             ob.hitboxUpdate();
             ob.crashTest(this.system);
         }
     }
 
-    public void generateSystem()
+    public void generateSystem() //generates a system of planets, with the first planet being the sun
     {
 
         for(int i = 0;i<this.system.length;i++) {
@@ -44,7 +48,7 @@ public class SolarSystem {
         for(int i =1;i<this.system.length;i++)
         {
             this.system[i] = this.planetGen();
-            while (!this.system[i].orbitCheck(this.system))
+            while (!this.system[i].orbitCheck(this.system)) //if the generated planet overlaps another, generate a new one
             {
                 this.system[i] = this.planetGen();
                 reponeeded++;

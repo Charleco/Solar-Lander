@@ -14,29 +14,27 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
-
 import java.util.ArrayList;
 
 public class UserInterface {
-    private ArrayList<Label> solarLabels;
-    private Stage stage;
-    private final FreeTypeFontGenerator generator;
-    private final SpriteBatch batch;
+    //viewports and cameras
+    private final ExtendViewport extendView; //main viewport
     private final OrthographicCamera extendCam;
-    private final ExtendViewport extendView;
-    private final ScreenViewport screenView;
-    private final FitViewport miniView;
+    private final FitViewport miniView; //mini map viewport
     private final OrthographicCamera miniCam;
+    private final ScreenViewport screenView; //ui viewport
+    //labels
+    private final ArrayList<Label> solarLabels;
+    private final Stage stage;
+    private final FreeTypeFontGenerator generator;
     private Label velocityLabel;
     private Label debugLabel;
-
-    public Texture landerImg;
-    public Texture thrusterSheet;
-
-    public SpriteAnim thrusters;
-    public SpriteAnim idling;
-
+    //sprites and animations
+    private final SpriteBatch batch;
+    private Texture landerImg;
+    private Texture thrusterSheet;
+    private SpriteAnim thrusters;
+    private SpriteAnim idling;
     public UserInterface(SolarSystem system)
     {
         solarLabels = new ArrayList<>();
@@ -52,12 +50,15 @@ public class UserInterface {
     }
     public void create(Lander land, SolarSystem system)
     {
+        //main camera setup
         extendCam.position.set(land.getPos().x, land.getPos().y,0);
         extendCam.update();
 
+        //mini map camera setup
         miniCam.position.set(miniView.getWorldWidth()/2,miniView.getWorldHeight()/2,0);
         miniCam.update();
 
+        //sprites and animations
         landerImg = new Texture("Lunar Lander.png");
         thrusterSheet = new Texture("Lunar Lander thruster.png");
         thrusters = new SpriteAnim(thrusterSheet,1,3,.1f);
@@ -65,7 +66,44 @@ public class UserInterface {
 
         this.stageSetUp(system.getSystem());
     }
-    public void stageSetUp(SolarObject[] solarSystem)
+    public void render(SolarSystem system, float stateTime)
+    {
+        //center main camera, check for zoom
+        extendCam.position.set(system.getLand().getPos().x, system.getLand().getPos().y, 0);
+        camZoom(extendCam);
+        extendCam.update();
+        extendView.apply();
+
+        //render lander sprite
+        batch.setProjectionMatrix(extendView.getCamera().combined);
+        batch.begin();
+        TextureRegion currentFrame = (system.getLand().thrusters(idling.getAnim(), thrusters.getAnim())).getKeyFrame(stateTime, true);
+        batch.draw(currentFrame, system.getLand().getPos().x, system.getLand().getPos().y);
+        batch.end();
+
+        //render labels
+        screenView.apply();
+        obLabelUpdate(solarLabels,system.getSystem());
+        debugUpdate(debugLabel,stateTime);
+        velLabelUpdate(velocityLabel,system.getLand());
+        stage.act(Gdx.graphics.getDeltaTime());
+        stage.draw();
+    }
+    public void resize(int width, int height) //gets called by the resize method in Main
+    {
+        extendView.update(width, height,true);
+        screenView.update(width, height, true);
+        miniView.setScreenBounds((Gdx.graphics.getWidth()-(Gdx.graphics.getWidth()/4)),((Gdx.graphics.getHeight()/96)), Gdx.graphics.getWidth()/4,Gdx.graphics.getWidth()/4);
+    }
+    public void dispose()
+    {
+        thrusterSheet.dispose();
+        batch.dispose();
+        landerImg.dispose();
+        stage.dispose();
+        generator.dispose();
+    }
+    public void stageSetUp(SolarObject[] solarSystem) //sets up the stage tables, generates the font for labels and adds them to the stage
     {
         Table root = new Table();
         root.setFillParent(true);
@@ -87,60 +125,36 @@ public class UserInterface {
         table.add(this.velocityLabel).growX().space(10).padLeft(5).uniform();
         table.row();
         table.add(this.debugLabel).growX().space(10).padLeft(5).uniform();
+        //planet labels
         for(int i=0;i<solarSystem.length;i++) {
             table.row();
-            Label obLabel = new Label("test",labelStyle);
+            Label obLabel = new Label("",labelStyle);
             this.solarLabels.add(obLabel);
             table.add(obLabel).growX().space(10).padLeft(5).uniform();
         }
     }
-    public void update(SolarSystem system, float stateTime)
-    {
-        extendCam.position.set(system.getLand().getPos().x, system.getLand().getPos().y, 0);
-        camZoom(extendCam);
-        extendCam.update();
-        extendView.apply();
 
-        batch.setProjectionMatrix(extendView.getCamera().combined);
-        batch.begin();
-        TextureRegion currentFrame = (system.getLand().thrusters(idling.getAnim(), thrusters.getAnim())).getKeyFrame(stateTime, true);
-        batch.draw(currentFrame, system.getLand().getPos().x, system.getLand().getPos().y);
-        batch.end();
-
-        screenView.apply();
-        obLabelUpdate(solarLabels,system.getSystem());
-        debugUpdate(debugLabel,stateTime);
-        velLabelUpdate(velocityLabel,system.getLand());
-        stage.act(Gdx.graphics.getDeltaTime());
-        stage.draw();
-    }
-
-    public void uiResize(int width,int height)
+    public long getMemUsage() //returns total memory - free memory
     {
-        extendView.update(width, height,true);
-        screenView.update(width, height, true);
-        miniView.setScreenBounds((Gdx.graphics.getWidth()-(Gdx.graphics.getWidth()/4)),((Gdx.graphics.getHeight()/96)), Gdx.graphics.getWidth()/4,Gdx.graphics.getWidth()/4);
+        return Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
     }
-    public long getMemUsage()
+    public void debugUpdate(Label label, float stateTime) //memory usage(kB), window size, delta time(ms), total time(s)
     {
-        long heapSize = Runtime.getRuntime().totalMemory();
-        long heapFreeSize = Runtime.getRuntime().freeMemory();
-        return heapSize - heapFreeSize;
-    }
-    public void debugUpdate(Label label, float stateTime) {
         label.setText("Debug: "+"\n"+"Memory Usage: "+this.getMemUsage()/(1024)+"kB"+"\n"+"Window Size: "+ Gdx.graphics.getHeight()+"x"+Gdx.graphics.getWidth()+"\n" + "DeltaTime(ms): "+Gdx.graphics.getDeltaTime()*1000+"\n"+"Total Time(s): "+Math.round(stateTime));
     }
-    public void velLabelUpdate(Label label, Lander land) {
+    public void velLabelUpdate(Label label, Lander land) //lander velocity and position
+    {
         label.setText("Lander: "+"\n"+"Velx: "+ land.getVel().x+"\n"+"Vely: "+ land.getVel().y+"\n"+"X: "+ land.getPos().x+"\n"+"Y: "+ land.getPos().y);
     }
-    public void obLabelUpdate(ArrayList<Label> labels, SolarObject[] system) {
+    public void obLabelUpdate(ArrayList<Label> labels, SolarObject[] system) //planet velocity, position, and mass
+    {
         for(int i =0;i<system.length;i++)
         {
             SolarObject ob = system[i];
             labels.get(i).setText("Planet " + (i + 1) + ":" + "\n" + "Velx: " + ob.getVel().x + "\n" + "Vely: " + ob.getVel().y + "\n" + "X: " + ob.getPos().x + "\n" + "Y: " + ob.getPos().y + "\n" + "Mass: " + ob.getMass());
         }
     }
-    public void camZoom(OrthographicCamera cam)
+    public void camZoom(OrthographicCamera cam) //if Z or X is pressed, zoom out, else set zoom back to normal
     {
         if(Gdx.input.isKeyPressed(Input.Keys.Z))
             cam.zoom = 10f;
@@ -149,14 +163,7 @@ public class UserInterface {
         else
             cam.zoom = 1f;
     }
-    public void dispose()
-    {
-        thrusterSheet.dispose();
-        batch.dispose();
-        landerImg.dispose();
-        stage.dispose();
-        generator.dispose();
-    }
+
     public Stage getStage() {
         return this.stage;
     }

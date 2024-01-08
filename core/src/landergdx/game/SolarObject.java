@@ -7,13 +7,13 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
 
 public abstract class SolarObject {
-    private Vector2 pos;
-    private Vector2 vel;
+    private final Vector2 pos;
+    private final Vector2 vel;
     private final float mass;
     private Circle hitBox;
-    public final float G = 10F;
-    private float radius;
-    private Color color;
+    static final float G = 10F;
+    private final float radius;
+    private final Color color;
     public SolarObject(float mass, float x, float y, Color color, float radius)
     {
         this.mass = mass;
@@ -23,11 +23,11 @@ public abstract class SolarObject {
         this.radius = radius;
         this.hitBox = new Circle(this.pos.x,this.pos.y,this.radius);
     }
-    public float getDistance(SolarObject ob2)
+    public float distance(SolarObject ob2) //returns the distance between this and ob2
     {
         return new Vector2(ob2.pos.x - this.pos.x,ob2.pos.y - this.pos.y).len();
     }
-    public Vector2 gravity(SolarObject ob2, float delta)
+    public Vector2 gravity(SolarObject ob2, float delta) //returns the gravitational force between this and ob2
     {
             Vector2 distVect = new Vector2(ob2.pos.x - this.pos.x, ob2.pos.y - this.pos.y);
             float distMag = distVect.len();
@@ -35,19 +35,31 @@ public abstract class SolarObject {
             float angle = (float) Math.atan2(distVect.y, distVect.x);
             return new Vector2((float) (Math.cos(angle) * gravForce * delta), (float) (Math.sin(angle) * gravForce * delta));
     }
-    public void orbit(SolarObject ob2, float delta)
+    public Vector2 netGrav(SolarObject[] system, float delta) //returns the net gravitational force between this and all other objects in system
+    {
+        Vector2 netGrav = new Vector2();
+        for(SolarObject ob2: system)
+        {
+            if(this.hashCode()!=ob2.hashCode())
+            {
+                netGrav.add(this.gravity(ob2,delta));
+            }
+        }
+        return netGrav;
+    }
+    public void orbit(SolarObject ob2, float delta) //orbiting that accounts only for the gravity between ob2 / the sun and this
     {
         this.vel.add(gravity(ob2,delta));
         this.pos.x += this.vel.x * delta;
         this.pos.y += this.vel.y * delta;
     }
-    public void orbit2(SolarObject[] system, float delta)
+    public void orbit2(SolarObject[] system, float delta) //orbiting that accounts for NetGravity
     {
-        this.vel.add(getNetGrav(system,delta));
+        this.vel.add(netGrav(system,delta));
         this.pos.x += this.vel.x * delta;
         this.pos.y += this.vel.y * delta;
     }
-    public void setStartVel(SolarObject ob2)
+    public void setStartVel(SolarObject ob2) //sets the starting velocity based on the gravitational force between it and ob2
     {
         double circleOrbit= 1.57;
         Vector2 distVect = new Vector2(this.pos.x-ob2.pos.x,this.pos.y-ob2.pos.y);
@@ -57,11 +69,11 @@ public abstract class SolarObject {
         float vely = (float) (velocity*(Math.sin(angle+circleOrbit)));
         this.vel.add(velx,vely);
     }
-    public boolean orbitCheck(SolarObject[] system)
+    public boolean orbitCheck(SolarObject[] system) //checks if the planet overlaps any other planets
     {
         for(SolarObject ob2: system)
         {
-            float dist = this.getDistance(ob2);
+            float dist = this.distance(ob2);
             if(dist < (this.radius + ob2.radius)&&(this.hashCode()!=ob2.hashCode()))
             {
                 return false;
@@ -74,13 +86,13 @@ public abstract class SolarObject {
         hitBox.x = pos.x;
         hitBox.y = pos.y;
     }
-    public void crashTest(SolarObject[] system)
+    public void crashTest(SolarObject[] system) //checks if the planet overlaps any other planets and if so, handle the collision based on mass
     {
         for(SolarObject ob2: system) {
             if (Intersector.overlaps(this.hitBox, ob2.hitBox)&&this.hashCode()!=ob2.hashCode()) {
                 if (this.mass < ob2.mass) {
                     Gdx.app.log("Collision", "Before: " + " Pos: (" + this.pos.x + "," + this.pos.y + ")" + " Vel: (" + this.vel.x + "," + this.vel.y + ")");
-                    float dist = this.radius + ob2.radius - this.getDistance(ob2);
+                    float dist = this.radius + ob2.radius - this.distance(ob2);
                     this.pos.x -= (ob2.pos.x - this.pos.x) * dist / (2 * this.radius);
                     this.pos.y -= (ob2.pos.y - this.pos.y) * dist / (2 * this.radius);
                     if (Math.abs(this.vel.x) > Math.abs(this.vel.y))
@@ -90,7 +102,7 @@ public abstract class SolarObject {
                     Gdx.app.log("Collision", "After: " + " Pos: (" + this.pos.x + "," + this.pos.y + ")" + " Vel: (" + this.vel.x + "," + this.vel.y + ")");
                 } else {
                     Gdx.app.log("Collision", "Before: " + " Pos: (" + ob2.pos.x + "," + ob2.pos.y + ")" + " Vel: (" + ob2.vel.x + "," + ob2.vel.y + ")");
-                    float dist = ob2.radius + this.radius - ob2.getDistance(this);
+                    float dist = ob2.radius + this.radius - ob2.distance(this);
                     ob2.pos.x -= (this.pos.x - ob2.pos.x) * dist / (2 * ob2.radius);
                     ob2.pos.y -= (this.pos.y - ob2.pos.y) * dist / (2 * ob2.radius);
                     if (Math.abs(ob2.vel.x) > Math.abs(ob2.vel.y))
@@ -102,31 +114,14 @@ public abstract class SolarObject {
             }
         }
     }
-    public Vector2 getNetGrav(SolarObject[] system, float delta)
-    {
-        Vector2 netGrav = new Vector2();
-        for(SolarObject ob2: system)
-        {
-            if(this.hashCode()!=ob2.hashCode())
-            {
-                netGrav.add(this.gravity(ob2,delta));
-            }
-        }
-        return netGrav;
-    }
+
     public Vector2 getPos()
     {
         return this.pos;
     }
-    public void setPos(Vector2 newPos) {
-        this.pos.set(newPos);
-    }
     public Vector2 getVel()
     {
         return this.vel;
-    }
-    public void setVel(Vector2 newVel) {
-        this.vel.set(newVel);
     }
     public float getMass()
     {
@@ -143,15 +138,9 @@ public abstract class SolarObject {
     {
         return this.radius;
     }
-    public void setRadius(float newRad) {
-        this.radius = newRad;
-    }
     public Color getColor()
     {
         return this.color;
-    }
-    public void setColor(Color newColor) {
-        this.color = newColor;
     }
 
 }

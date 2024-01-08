@@ -10,10 +10,10 @@ import java.util.HashMap;
 import static com.badlogic.gdx.Input.Keys.SPACE;
 
 public class SolarRender {
-    private ShapeRenderer rend;
+    private final ShapeRenderer rend;
     private float dotTime;
-    private HashMap<Vector2,Color> dots;
-    private float scale = .25f;
+    private final HashMap<Vector2,Color> dots;
+    private final float scale = .25f;
     public SolarRender()
     {
         this.rend = new ShapeRenderer();
@@ -26,25 +26,26 @@ public class SolarRender {
     }
     public void render(SolarSystem system, float delta, UserInterface ui)
     {
+        //planets and their prior positions
         rend.setProjectionMatrix(ui.getExtendView().getCamera().combined);
         rend.begin(ShapeRenderer.ShapeType.Filled);
         this.drawPlanets(system.getSystem());
         this.trailDot(system.getSystem());
         rend.end();
-
+        //hitboxes, orbits, force vectors
         rend.begin(ShapeRenderer.ShapeType.Line);
-        this.hitBoxRender(system.getSystem(),system.getLand()); //hitboxes
-        this.orbitRender(system.getLand(),system.getSystem(),delta); //orbit circles
-        this.landerVectLine(system.getLand(),system.getSystem()[0],delta); // force vectors (vectors)
-        this.vectLine(system.getSystem(),system.getSystem()[0],delta); // force vectors
+        this.hitBoxRender(system.getSystem(),system.getLand());
+        this.orbitRender(system.getLand(),system.getSystem(),delta);
+        this.landerVectLine(system.getLand(),system.getSystem()[0],delta);
+        this.vectLine(system.getSystem(),system.getSystem()[0],delta);
         rend.end();
-
+        //ui vector boxes
         rend.setProjectionMatrix(ui.getScreenView().getCamera().combined);
         rend.begin(ShapeRenderer.ShapeType.Filled);
-        this.drawLandUi(system.getLand(), system.getSystem(),ui.getScreenView(),delta); //vector boxes
+        this.drawLandBoxVectors(system.getLand(), system.getSystem(),ui.getScreenView(),delta);
         rend.end();
 
-
+        //minimap
         ui.getMiniView().apply();
         rend.setProjectionMatrix(ui.getMiniView().getCamera().combined);
         //minimap background
@@ -69,6 +70,10 @@ public class SolarRender {
         this.miniVectLine(system.getSystem(),system.getSystem()[0],delta);
         rend.end();
     }
+    public void dispose()
+    {
+        this.rend.dispose();
+    }
     public void drawPlanets(SolarObject[] system)
     {
         for(SolarObject ob:system)
@@ -77,7 +82,8 @@ public class SolarRender {
             this.rend.circle(ob.getPos().x, ob.getPos().y, ob.getRadius()); //draw the planets
         }
     }
-    public void hitBoxRender(SolarObject[] system, Lander land) {
+    public void hitBoxRender(SolarObject[] system, Lander land) //draws the hitboxes of the planets if space is held
+    {
         if (Gdx.input.isKeyPressed(SPACE))
         {
             this.rend.setColor(Color.RED);
@@ -87,16 +93,17 @@ public class SolarRender {
             this.rend.circle(land.getHitBox().x, land.getHitBox().y, land.getHitBox().radius);
         }
     }
-    public void orbitRender(SolarObject ob1, SolarObject[] system, float delta) {
+    public void orbitRender(SolarObject ob1, SolarObject[] system, float delta) //if gravitational force is greater than 5e-4, draw the orbit circle
+    {
         for (SolarObject ob2 : system)
         {
             if (ob1.gravity(ob2,delta).len() > 5e-4) {
                 this.rend.setColor(ob2.getColor());
-                this.rend.circle(ob2.getPos().x, ob2.getPos().y, ob1.getDistance(ob2));
+                this.rend.circle(ob2.getPos().x, ob2.getPos().y, ob1.distance(ob2));
             }
         }
     }
-    public void miniRend(SolarObject[] system)
+    public void miniRend(SolarObject[] system) //draws the scaled down planets on the minimap
     {
         for(SolarObject ob: system) {
             float miniX = ob.getPos().x * scale;
@@ -106,14 +113,15 @@ public class SolarRender {
             this.rend.circle(miniX, miniY, miniRad);
         }
     }
-    public void landerMiniRend(Lander land)
+    public void landerMiniRend(Lander land) //draws the lander / white dot on the minimap
     {
         this.rend.setColor(Color.WHITE);
         float miniX = land.getPos().x * scale;
         float miniY = land.getPos().y * scale;
         this.rend.circle(miniX,miniY,20);
     }
-    public void vectLine(SolarObject[] system, SolarObject ob2, float delta) {
+    public void vectLine(SolarObject[] system, SolarObject ob2, float delta)
+    {
         for (SolarObject ob1 : system) {
             //Gravity
             this.rend.setColor(1, 0, 0, 1f);
@@ -136,7 +144,7 @@ public class SolarRender {
             this.rend.line(ob1.getPos().x * scale, ob1.getPos().y * scale, (ob1.getPos().x + ob1.getVel().x * 10) * scale, (ob1.getPos().y + ob1.getVel().y * 10) * scale);
         }
     }
-    public void landerVectLine(Lander land, SolarObject ob2, float delta)
+    public void landerVectLine(Lander land, SolarObject ob2, float delta) //somewhat redundant with drawLandBoxVectors, but draws the lander's velocity and netgrav vectors if V is held
     {
         if(Gdx.input.isKeyPressed(Input.Keys.V))
         {
@@ -149,7 +157,7 @@ public class SolarRender {
             this.rend.line(land.getPos().x + 16, land.getPos().y + 16, (land.getPos().x + 16) + land.getVel().x * 10, (land.getPos().y + 16) + land.getVel().y * 10);
         }
     }
-    public void trailDot(SolarObject[] system)
+    public void trailDot(SolarObject[] system) // every 2 seconds, add a Vector2/dot to the hashmap with each planet's position and color, then draw them all
     {
         float curTime = Gdx.graphics.getDeltaTime();
         dotTime += curTime;
@@ -163,14 +171,13 @@ public class SolarRender {
             }
             dotTime = 0f;
         }
-        this.rend.setColor(Color.WHITE);
         for(Vector2 pos: dots.keySet())
         {
             this.rend.setColor(dots.get(pos));
             this.rend.circle(pos.x,pos.y,10);
         }
     }
-    public void miniDots()
+    public void miniDots() //draws the scaled down traildots on the minimap
     {
         for(Vector2 pos: dots.keySet())
         {
@@ -178,11 +185,11 @@ public class SolarRender {
             this.rend.circle(pos.x*.25f,pos.y*.25f,10);
         }
     }
-    public void drawLandUi(Lander land, SolarObject[] system, Viewport view, float delta)
+    public void drawLandBoxVectors(Lander land, SolarObject[] system, Viewport view, float delta) //draws the lander's velocity and netgrav vectors in the center boxes
     {
         int gravBoxX = view.getScreenWidth()/2;
         int gravBoxY = view.getScreenHeight()-(view.getScreenHeight()-50);
-        Vector2 netGrav = new Vector2(land.getNetGrav(system,delta));
+        Vector2 netGrav = new Vector2(land.netGrav(system,delta));
         netGrav.x *= 10000;
         netGrav.y *= 10000;
         netGrav.clamp(0,50);

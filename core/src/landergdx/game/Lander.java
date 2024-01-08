@@ -12,13 +12,13 @@ public class Lander extends SolarObject {
         super(mass,x,y,color,radius);
         setHitBox(new Circle(getPos().x+16, getPos().y+16,16));
     }
-    public void update(float delta)
+    public void render(float delta)
     {
         this.fly(delta);
         this.hitboxUpdate();
     }
 
-    public void fly(float delta)
+    public void fly(float delta) //moves the lander with constant acceleration 1
     {
         if(Gdx.input.isKeyPressed(Keys.A)) {
             getVel().x-= 1*delta;
@@ -34,20 +34,19 @@ public class Lander extends SolarObject {
         }
         getPos().add(getVel());
     }
-    public Animation<TextureRegion> thrusters(Animation<TextureRegion> idle, Animation<TextureRegion> thrust)
+    public Animation<TextureRegion> thrusters(Animation<TextureRegion> idle, Animation<TextureRegion> thrust) //returns the correct animation based on the current input
     {
         if(Gdx.input.isKeyPressed(Keys.W))
             return thrust;
         return idle;
     }
-    public void hitboxUpdate()
+    public void hitboxUpdate() //updates the hitbox to the current position of the lander's COM(center of mass)
     {
         getHitBox().x = getPos().x+16;
         getHitBox().y = getPos().y+16;
     }
-    public float getDistance(SolarObject ob2)
+    public float distance(SolarObject ob2) //returns the distance between this and ob2 accounting for the position of the lander technically being the bottom left corner
     {
-        return (float) Math.sqrt(Math.abs(Math.pow((this.getPos().x+16) - ob2.getPos().x,2) + Math.pow((this.getPos().y+16) - ob2.getPos().y,2)));
+        return new Vector2(ob2.getPos().x - (this.getPos().x+16), ob2.getPos().y - (this.getPos().y+16)).len();
     }
-
 }
